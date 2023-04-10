@@ -139,9 +139,7 @@ def drawDice(app, canvas):
 
     canvas.create_image(app.diceLocation[0],app.diceLocation[1],
                          image=ImageTk.PhotoImage(app.diceImage))
-    # canvas.create_oval(app.diceLocation[0] - 50, app.diceLocation[1] - 50, 
-    #                         app.diceLocation[0] + 50, app.diceLocation[1] + 50, 
-    #                         outline = '#94133e', width = '2')
+   
     if app.rollNumber > 0:
         canvas.create_text(app.diceLocation[0],app.diceLocation[1],
                          text = app.rollNumber, fill='black', font='Courier 30 bold')
