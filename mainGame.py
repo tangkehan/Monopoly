@@ -4,16 +4,78 @@ from Chance import *
 from MagicTax import *
 from Corner import*
 import random
-import pygame
+
+
+# import pygame
 import sys
+
 from PIL import ImageFilter  # XS
 from PIL import ImageTk  # XS
 from PIL import Image  # XS get button size 
 
 
+############################### start page from here #############################
+def startInf(app):
+    app.startMessage = 'Click the buttom to enter your name!'
+    app.enterNameButtonLocation = (50, 50)
+    app.themeImage = Image.open('resource/theme.png')
+    app.startButtonLocation = (app.width/2, app.height/2)
+    app.startUpImage = app.loadImage('resource/startUp.png')
+    app.startUpImage = app.scaleImage(app.startUpImage, 0.04).filter(ImageFilter.SMOOTH)
+    # app.startDownImage = app.loadImage('resource/startDown.png')
+    # app.startDownImage = app.scaleImage(app.startDownImage, 0.08).filter(ImageFilter.SMOOTH)
+    app.playButtonLocation = [app.width/2 - 50, app.height/2 + 50]
 
-def appStarted(app):
 
+# Kehan : add the start mode mouse press and add the name part
+def startMode_mousePressed(app, event):
+    x, y = event.x, event.y
+    x1 = app.playButtonLocation[0] - 65
+    x2 = app.playButtonLocation[0] + 65
+    y1 = app.playButtonLocation[1] - 30
+    y2 = app.playButtonLocation[1] + 40
+    if x >= x1 and x <= x2 and y >= y1 and y <= y2:
+        app.mode = 'gameMode'
+
+    (x, y) = app.enterNameButtonLocation
+    d1 = ((x - event.x)**2 + (y - event.y)** 2) ** 0.5
+    if d1 <= 15:
+        name = app.getUserInput('What is your name?')
+        app.name = name
+
+        if (name == None):
+            app.startMessage  = 'You canceled!'
+                    
+        else:
+            app.showMessage('You entered: ' + name)
+            app.startMessage  = f'Hi, {name}!'
+
+
+# Kehan : startMode drawing may need change some image/color
+def startMode_redrawAll(app, canvas):
+    # XS: add a theme page, including the "Play(start game) button"
+    # draw the cover
+    canvas.create_image(app.width/2, app.height/2,
+                        image=ImageTk.PhotoImage(app.themeImage))
+
+    # draw the start button
+    canvas.create_image(app.playButtonLocation[0], app.playButtonLocation[1], image=ImageTk.PhotoImage(app.startUpImage))
+   
+    # draw the enter name button
+    canvas.create_oval(app.enterNameButtonLocation[0] - 15,app.enterNameButtonLocation[1] - 15,
+                       app.enterNameButtonLocation[0] + 15, app.enterNameButtonLocation[1] + 15,
+                       fill = 'snow', outline = 'black')
+    
+    canvas.create_text(75, 50, anchor = 'w',
+                       text= app.startMessage , font='Courier 20 bold', fill='white')
+
+
+
+
+############################### game page from here #############################
+# Kehan: gameInf is to store some global parameters
+
+def gameInf(app):
     app.width = 1200
     app.height = 780
     
@@ -81,12 +143,7 @@ def appStarted(app):
     app.taxImage = app.loadImage('resource/Tax.png')
     app.taxImage = app.scaleImage(app.taxImage, 0.3).filter(ImageFilter.SMOOTH)
 
-    app.themeImage = Image.open('resource/theme.png')
-    app.startButtonLocation = (app.width/2, app.height/2)
-    app.startUpImage = app.loadImage('resource/startUp.png')
-    app.startUpImage = app.scaleImage(app.startUpImage, 0.08).filter(ImageFilter.SMOOTH)
-    app.startDownImage = app.loadImage('resource/startDown.png')
-    app.startDownImage = app.scaleImage(app.startDownImage, 0.08).filter(ImageFilter.SMOOTH)
+   
 
     # x, y = app.width/2 - 50, app.height/2 + 50
     # app.startButtonRect = pygame.Rect(x, y, app.startUpImage.width, app.startUpImage.height)
@@ -112,13 +169,17 @@ def drawYesNo(app, canvas):
     canvas.create_image(app.noLocation[0],app.noLocation[1],
                          image=ImageTk.PhotoImage(app.noImage))
 
+# Kehan: add the player name and computer name， Need to add more detail later
 # XS draw two money button  
 def drawMoney(app, canvas):
-
     canvas.create_image(app.moneyPlayerLocation[0],app.moneyPlayerLocation[1],
                          image=ImageTk.PhotoImage(app.moneyPlayerImage))
+    canvas.create_text(app.moneyPlayerLocation[0], app.moneyPlayerLocation[1], 
+                       text = app.name, font='Courier 28 bold', fill = 'black')
     canvas.create_image(app.moneyComLocation[0],app.moneyComLocation[1],
                          image=ImageTk.PhotoImage(app.moneyComImage))
+    canvas.create_text(app.moneyComLocation[0],app.moneyComLocation[1], 
+                       text = 'Computer', font='Courier 28 bold', fill = 'black')
 
 def drawPrice(app, canvas):
 
@@ -131,18 +192,6 @@ def drawBackground(app, canvas):
     backgroundPhoto = ImageTk.PhotoImage(backgroundImage)
     canvas.create_image(0, 0, anchor="nw", image=backgroundPhoto)
     canvas.lower("all")
-
-
-# XS: add a theme page, including the "Play(start game) button"
-def drawCover(app, canvas):
-    canvas.create_image(app.width/2, app.height/2,
-                        image=ImageTk.PhotoImage(app.themeImage))
-
-    x, y = app.width/2 - 50, app.height/2 + 50
-    app.startButtonImage = canvas.create_image(x, y, 
-                            image=ImageTk.PhotoImage(app.startUpImage))
-    
-
 
 
 def getAllLocation(app):
@@ -255,7 +304,7 @@ def drawDice(app, canvas):
 
 
 
-def mousePressed(app, event):
+def gameMode_mousePressed(app, event):
     x = event.x
     y = event.y
 
@@ -280,10 +329,6 @@ def mousePressed(app, event):
      
 
 
-
-
-
-
 def drawBuilding(app,canvas):
     for i in range(len(app.map)):
         b = app.map[i]
@@ -296,9 +341,15 @@ def drawBuilding(app,canvas):
         else: 
             continue
 
+
+#Kehan : edit the drawing building info when click the building,
+# show the detail of the building and ask if player wants to buy?
+# after adding the player loop the map, need to change this part
 def drawBuildingInfo(app, canvas):  
     if app.click != None:
-        app.click.drawInfo(app, canvas)       
+        app.click.drawInfo(app, canvas)   
+        drawYesNo(app, canvas)    
+
 
 # XS : changed the outline and width
 def drawBoard(app, canvas):
@@ -367,31 +418,33 @@ def drawBoard(app, canvas):
 # XS :
 # If the game does not start, the screen shows the theme cover
 # If you click "play", the game will start and the game interface will be displayed
-def redrawAll(app, canvas):
-    # if not app.startButtonClicked:
-    #     drawCover(app, canvas)
+def gameMode_redrawAll(app, canvas):
 
-    # else:
 
-        canvas.create_rectangle(0, 0, app.width, app.height, 
-                                fill = '#40449b', outline='black')
-        canvas.create_rectangle(app.startLocation[0], app.startLocation[1], app.boardSize, app.boardSize, 
-                                fill = '#e8eefd', outline='black', width=1)
-                
-        
-        drawBackground(app, canvas)  # XS
-        drawBoard(app, canvas)
-        drawDice(app, canvas)
-        drawRoll(app, canvas)   # XS
-        drawBuilding(app, canvas)
-        drawBuildingInfo(app, canvas)
-        drawYesNo(app, canvas)  # XS
-        drawMoney(app, canvas)  # XS
-        drawPrice(app, canvas)  # XS
+    canvas.create_rectangle(0, 0, app.width, app.height, 
+                            fill = '#40449b', outline='black')
+    canvas.create_rectangle(app.startLocation[0], app.startLocation[1], app.boardSize, app.boardSize, 
+                            fill = '#e8eefd', outline='black', width=1)
+            
+    
+    drawBackground(app, canvas)  # XS
+    drawBoard(app, canvas)
+    drawDice(app, canvas)
+    drawRoll(app, canvas)   # XS
+    drawBuilding(app, canvas)
+    drawBuildingInfo(app, canvas)
+    drawMoney(app, canvas)  # XS
+    drawPrice(app, canvas)  # XS
 
 
 
-        
+
+# The whole game running start here
+def appStarted(app):
+    app.mode = 'startMode'
+
+    startInf(app)
+    gameInf(app)   
 
 
 
