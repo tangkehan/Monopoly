@@ -17,7 +17,7 @@ class Building():
         
     def getMessage(self):
         if self.owner == None:
-            return 'Don not have onwer yet!'
+            return 'Don not have owner yet!'
         else:
             return self.owner
 
@@ -105,34 +105,35 @@ class Building():
         return x1, y1, x2, y2
 
     
-    
+    # XS : changed width to 1 
     def drawColorAndName(self, app, canvas):
         x1, y1, x2, y2 = self.getColorLocation(app)
         canvas.create_rectangle(x1, y1, x2, y2,
-                            fill = self.color, outline='black', width = '2')
+                            fill = self.color, outline='black', width = '1')
         canvas.create_text(self.location[0], self.location[1],text = self.name,
-                           fill='black', font='Courier 15')
+                           fill='black', font='Courier 13')  # XS font-size
 
     def drawOwner(self, app, canvas):
         x1, y1, x2, y2 = self.getOwnerLocation(app)
         if self.owner == 'player':
             canvas.create_rectangle(x1, y1, x2, y2,
-                                fill = 'snow' , outline='black', width = '2')
+                                fill = 'snow' , outline='black', width = '1')
         if self.owner == 'AI':
             canvas.create_rectangle(x1, y1, x2, y2,
-                                fill = 'black' , outline='black', width = '2')
-            
+                                fill = 'black' , outline='black', width = '1')
+    # XS changed the coordinate        
     def drawInfo(self, app, canvas):
-        x1 = app.boardSize + 50
-        x2 = app.width - 50
-        canvas.create_rectangle(x1, 0.5 * app.height, x2, 0.5 * app.height + 300,
-                              fill = '#e8eefd', outline='black', width=3)
+        x1 = app.boardSize + 30
+        x2 = app.width - 70
+        canvas.create_rectangle(x1, 0.5 * app.height, x2, 0.5 * app.height + 360,
+                              fill = '#e8eefd', outline='black', width=0)
         
+        # small rectangle
         canvas.create_rectangle(x1, 0.5 * app.height, x2, 0.5 * app.height + 100,
-                             fill = self.color, outline='black', width=3)
+                             fill = self.color, outline='black', width=0)
        
         canvas.create_text((x1 + x2) / 2, (app.height + 100) / 2, 
-                           text= self.name ,fill='Black', font='Courier 25 bold') 
+                           text= self.name ,fill='Black', font='Courier 15 bold')  # XS font-size
         
         # canvas.create_rectangle(x1, 0.5 * app.height, x2, 1100,
         #                      outline='black', width=3)
@@ -140,7 +141,7 @@ class Building():
         m = self.getMessage()
         canvas.create_text((x1 + x2) / 2, 0.5 * app.height + 150,
                              text= f'Rent: ${self.rentfee}\nCost of Building: ${self.price}\nOwner: {m}',
-                             anchor='n',fill='black', font='Courier 18 bold') 
+                             anchor='n',fill='black', font='Courier 12 bold') 
         
     
 

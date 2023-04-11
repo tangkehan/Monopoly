@@ -4,8 +4,16 @@ from Chance import *
 from MagicTax import *
 from Corner import*
 import random
+import pygame
+import sys
+from PIL import ImageFilter  # XS
+from PIL import ImageTk  # XS
+from PIL import Image  # XS get button size 
+
+
 
 def appStarted(app):
+
     app.width = 1200
     app.height = 780
     
@@ -30,11 +38,112 @@ def appStarted(app):
     app.diceImage = app.scaleImage(app.diceImage, 0.5)
     app.rollNumber = -1
 
+    # XS: draw screen needs 3 steps : load, draw, call
+    # 1st: load Roll, yes, no button
+    app.rollLocation = (app.cornerSize + 5 * app.gridHeight, app.boardSize - app.cornerSize - app.gridHeight + 20)
+    app.rollImage = app.loadImage('resource/Roll.png')
+    app.rollImage = app.scaleImage(app.rollImage, 0.03).filter(ImageFilter.SMOOTH)
+
+    app.yesLocation = (2 * app.cornerSize + 6 * app.gridHeight + 120, app.boardSize - 80)
+    app.yesImage = app.loadImage('resource/YES.png')
+    app.yesImage = app.scaleImage(app.yesImage, 0.2).filter(ImageFilter.SMOOTH)
+
+    app.noLocation = (2 * app.cornerSize + 6 * app.gridHeight + 300, app.boardSize - 80)
+    app.noImage = app.loadImage('resource/NO.png')
+    app.noImage = app.scaleImage(app.noImage, 0.2).filter(ImageFilter.SMOOTH)
+
+    # XS load money_player, money_computer button 
+    app.moneyPlayerLocation = (2 * app.cornerSize + 7 * app.gridHeight + 100, 0.8 * app.gridHeight)
+    app.moneyPlayerImage = app.loadImage('resource/money_player.png')
+    app.moneyPlayerImage = app.scaleImage(app.moneyPlayerImage, 0.4).filter(ImageFilter.SMOOTH)
+
+    app.moneyComLocation = (2 * app.cornerSize + 7 * app.gridHeight + 100, 200)
+    app.moneyComImage = app.loadImage('resource/money_com.png')
+    app.moneyComImage = app.scaleImage(app.moneyComImage, 0.4).filter(ImageFilter.SMOOTH)
+
+
+    # XS load price button image
+    app.priceLocation = (2 * app.cornerSize + 6 * app.gridHeight + 320, app.cornerSize + 2.75 * app.gridHeight)
+    app.priceImage = app.loadImage('resource/Price.png')
+    app.priceImage = app.scaleImage(app.priceImage, 0.4).filter(ImageFilter.SMOOTH)
+
+
+    # XS load board icon image
+    app.jailImage = app.loadImage('resource/Jail.png')
+    app.jailImage = app.scaleImage(app.jailImage, 0.3).filter(ImageFilter.SMOOTH)
+    app.goToJailImage = app.loadImage('resource/go to jail.png')
+    app.goToJailImage = app.scaleImage(app.goToJailImage, 0.6).filter(ImageFilter.SMOOTH)
+    app.parkingImage = app.loadImage('resource/free parking.png')
+    app.parkingImage = app.scaleImage(app.parkingImage, 0.3).filter(ImageFilter.SMOOTH)
+    app.goImage = app.loadImage('resource/GO.png')
+    app.goImage = app.scaleImage(app.goImage, 0.2).filter(ImageFilter.SMOOTH)
+
+    app.taxImage = app.loadImage('resource/Tax.png')
+    app.taxImage = app.scaleImage(app.taxImage, 0.3).filter(ImageFilter.SMOOTH)
+
+    app.themeImage = Image.open('resource/theme.png')
+    app.startButtonLocation = (app.width/2, app.height/2)
+    app.startUpImage = app.loadImage('resource/startUp.png')
+    app.startUpImage = app.scaleImage(app.startUpImage, 0.08).filter(ImageFilter.SMOOTH)
+    app.startDownImage = app.loadImage('resource/startDown.png')
+    app.startDownImage = app.scaleImage(app.startDownImage, 0.08).filter(ImageFilter.SMOOTH)
+
+    # x, y = app.width/2 - 50, app.height/2 + 50
+    # app.startButtonRect = pygame.Rect(x, y, app.startUpImage.width, app.startUpImage.height)
+    # app.startButtonClicked = False
+
+
     app.playerTurn = True
     app.isGameOver = False
 
 
   
+# XS 2 step:  draw Roll, yes, no button
+def drawRoll(app, canvas):
+
+    canvas.create_image(app.rollLocation[0],app.rollLocation[1],
+                         image=ImageTk.PhotoImage(app.rollImage))
+    
+def drawYesNo(app, canvas):
+
+    canvas.create_image(app.yesLocation[0],app.yesLocation[1],
+                         image=ImageTk.PhotoImage(app.yesImage))
+    
+    canvas.create_image(app.noLocation[0],app.noLocation[1],
+                         image=ImageTk.PhotoImage(app.noImage))
+
+# XS draw two money button  
+def drawMoney(app, canvas):
+
+    canvas.create_image(app.moneyPlayerLocation[0],app.moneyPlayerLocation[1],
+                         image=ImageTk.PhotoImage(app.moneyPlayerImage))
+    canvas.create_image(app.moneyComLocation[0],app.moneyComLocation[1],
+                         image=ImageTk.PhotoImage(app.moneyComImage))
+
+def drawPrice(app, canvas):
+
+    canvas.create_image(app.priceLocation[0],app.priceLocation[1],
+                         image=ImageTk.PhotoImage(app.priceImage))
+
+# XS draw background
+def drawBackground(app, canvas):
+    backgroundImage = Image.open('resource/background.png')
+    backgroundPhoto = ImageTk.PhotoImage(backgroundImage)
+    canvas.create_image(0, 0, anchor="nw", image=backgroundPhoto)
+    canvas.lower("all")
+
+
+# XS: add a theme page, including the "Play(start game) button"
+def drawCover(app, canvas):
+    canvas.create_image(app.width/2, app.height/2,
+                        image=ImageTk.PhotoImage(app.themeImage))
+
+    x, y = app.width/2 - 50, app.height/2 + 50
+    app.startButtonImage = canvas.create_image(x, y, 
+                            image=ImageTk.PhotoImage(app.startUpImage))
+    
+
+
 
 def getAllLocation(app):
     # get corner Locations 
@@ -98,27 +207,27 @@ def assignBuildings(app):
 
 
     # initialize the up side building
-    red01 = Building('Sushi\nSpot', 'red', app.up[0], 'up', 140, 15)
-    red02 = Building('BBQ\nPit', 'red', app.up[1], 'up', 170, 20)
-    blue01 = Building('Dog\nPark', 'sky blue', app.up[2], 'up', 180, 25)
-    blue02 = Building('Cat\nCafe', 'sky blue', app.up[4], 'up', 200, 30)
+    red01 = Building('Sushi\nSpot', '#AF3800', app.up[0], 'up', 140, 15)
+    red02 = Building('BBQ\nPit', '#AF3800', app.up[1], 'up', 170, 20)
+    blue01 = Building('Dog\nPark', '#a5d6f7', app.up[2], 'up', 180, 25)
+    blue02 = Building('Cat\nCafe', '#a5d6f7', app.up[4], 'up', 200, 30)
     
     chance04 = Chance(app.up[5])
     tax03 = MagicTax(app.up[3], 50)
  
     # initialize the left side building
-    orange01 = Building('Winter\nLodge', 'orange', app.left[0], 'left', 140, 15)
-    orange02 = Building('Spring\nGarden', 'orange', app.left[2], 'left', 170, 20)
-    yellow01 = Building('Happy\nBash', 'gold', app.left[4], 'left', 180, 25)
-    yellow02 = Building('Feast\nHall', 'gold', app.left[5], 'left', 200, 30)
+    orange01 = Building('Winter\nLodge', '#f98810', app.left[0], 'left', 140, 15)
+    orange02 = Building('Spring\nGarden', '#f98810', app.left[2], 'left', 170, 20)
+    yellow01 = Building('Happy\nBash', '#ffdf00', app.left[4], 'left', 180, 25)
+    yellow02 = Building('Feast\nHall', '#ffdf00', app.left[5], 'left', 200, 30)
 
     chance03 = Chance(app.left[3])
     tax02 = MagicTax(app.left[1], 100)
 
     # initialize the right side building
-    purple01 = Building('Ocean\nView', 'Mediumpurple1', app.right[2], 'right', 110, 12)
-    purple02 = Building('Beach\nResort', 'Mediumpurple1', app.right[4], 'right', 180, 20)
-    purple03 = Building('Harvest\nMarket', 'Mediumpurple1', app.right[5], 'right', 140, 15)
+    purple01 = Building('Ocean\nView', '#4386fb', app.right[2], 'right', 110, 12)
+    purple02 = Building('Beach\nResort', '#4386fb', app.right[4], 'right', 180, 20)
+    purple03 = Building('Harvest\nMarket', '#4386fb', app.right[5], 'right', 140, 15)
   
     chance05 = Chance(app.right[1])
     tax04 = MagicTax(app.right[0], 100)
@@ -145,6 +254,7 @@ def drawDice(app, canvas):
                          text = app.rollNumber, fill='black', font='Courier 30 bold')
 
 
+
 def mousePressed(app, event):
     x = event.x
     y = event.y
@@ -161,9 +271,17 @@ def mousePressed(app, event):
         continue
 
     # click the dice to roll the dice
-    if ((x - app.diceLocation[0]) ** 2 + (y - app.diceLocation[1]) ** 2) ** 0.5 <= 45:
+    # if ((x - app.diceLocation[0]) ** 2 + (y - app.diceLocation[1]) ** 2) ** 0.5 <= 45:
+    #     rollDice(app)
+
+    # XS changed : click the "Roll" to roll the dice
+    if ((x - app.rollLocation[0]) ** 2 + (y - app.rollLocation[1]) ** 2) ** 0.5 <= 45:
         rollDice(app)
      
+
+
+
+
 
 
 def drawBuilding(app,canvas):
@@ -182,11 +300,16 @@ def drawBuildingInfo(app, canvas):
     if app.click != None:
         app.click.drawInfo(app, canvas)       
 
-
+# XS : changed the outline and width
 def drawBoard(app, canvas):
+    # XS: draw background color of the board
+    canvas.create_rectangle(app.startLocation[0], app.startLocation[1], 
+                            app.boardSize, app.boardSize,  fill='#e8eefd')
+
+
     # draw the board outline
     canvas.create_rectangle(app.startLocation[0], app.startLocation[1], app.boardSize, app.boardSize, 
-                             outline='black', width=3)
+                             outline='black', width=1)
     
     (x, y) = app.startLocation
 
@@ -198,8 +321,8 @@ def drawBoard(app, canvas):
         y2 = y + app.cornerSize
         y3 = y + 6 * app.gridHeight + app.cornerSize 
         y4 = y3 + app.cornerSize 
-        canvas.create_rectangle(x1, y, x2, y2, outline='black', width=3)
-        canvas.create_rectangle(x1, y3, x2, y4, outline='black', width=3)
+        canvas.create_rectangle(x1, y, x2, y2, outline='black', width=1)
+        canvas.create_rectangle(x1, y3, x2, y4, outline='black', width=1)
        
 
     # from up to down
@@ -210,43 +333,75 @@ def drawBoard(app, canvas):
         newX2 = newX1 + app.cornerSize
         
         canvas.create_rectangle(newX1, newY1, newX2, newY2, 
-                                 outline='black', width=3)
+                                 outline='black', width=1)
         canvas.create_rectangle(x, newY1, x + app.cornerSize, 
-                                newY2, outline='black', width=3)
+                                newY2, outline='black', width=1)
         
     # draw the corner
     # up row
-    canvas.create_text(x + 0.5 * app.cornerSize, y + 0.5 * app.cornerSize, 
-                       text=' Free\nParking!',fill='black', font='Courier 18 bold')
-    canvas.create_text(x + 1.5 * app.cornerSize + 6 * app.gridHeight, y + 0.5 * app.cornerSize,
-                        text='Go to\nJail!',fill='black', font='Courier 18 bold')
+    # XS Changed coordinate, font size : 10
+    canvas.create_text(x + 0.4 * app.cornerSize, y + 0.2 * app.cornerSize, 
+                       text=' Free\n Parking!',fill='black', font='Courier 12 bold')  
+    canvas.create_text(x + 1.3 * app.cornerSize + 6 * app.gridHeight, y + 0.2 * app.cornerSize,
+                        text='Go to\nJail!',fill='black', font='Courier 12 bold')
 
     # down side row
-    canvas.create_text(x + 0.5 * app.cornerSize, y + 1.5 * app.cornerSize + 6 * app.gridHeight, 
-                text='Jail!',fill='black', font='Courier 18 bold')
-    canvas.create_text(x + 1.5 * app.cornerSize + 6 * app.gridHeight, y + 1.5 * app.cornerSize + 6 * app.gridHeight,
-                 text='Go!',fill='black', font='Courier 18 bold')
+    canvas.create_text(x + 0.4 * app.cornerSize, y + 1.2 * app.cornerSize + 6 * app.gridHeight, 
+                text='Jail!',fill='black', font='Courier 12 bold')
+    # canvas.create_text(x + 1.3 * app.cornerSize + 6 * app.gridHeight, y + 1.3 * app.cornerSize + 6 * app.gridHeight,
+    #              text='Go!',fill='black', font='Courier 18 bold')
     
+    # XS: draw parking, gotoJail, Jail, Go icon
+    canvas.create_image(x + 0.6 * app.cornerSize, y + 0.6 * app.cornerSize, 
+                        image=ImageTk.PhotoImage(app.parkingImage))
+    canvas.create_image(x + 1.5 * app.cornerSize + 6 * app.gridHeight, y + 0.6 * app.cornerSize,
+                        image=ImageTk.PhotoImage(app.goToJailImage))
+    canvas.create_image(x + 0.6 * app.cornerSize, y + 1.6 * app.cornerSize + 6 * app.gridHeight,
+                        image=ImageTk.PhotoImage(app.jailImage))
+    canvas.create_image(x + 1.5 * app.cornerSize + 6 * app.gridHeight, y + 1.5 * app.cornerSize + 6 * app.gridHeight,
+                        image=ImageTk.PhotoImage(app.goImage))
 
 
+        
 
+# XS :
+# If the game does not start, the screen shows the theme cover
+# If you click "play", the game will start and the game interface will be displayed
 def redrawAll(app, canvas):
-    # give the whole board a background color
-    canvas.create_rectangle(0, 0, app.width, app.height, 
-                            fill = '#40449b', outline='black')
-    canvas.create_rectangle(app.startLocation[0], app.startLocation[1], app.boardSize, app.boardSize, 
-                            fill = '#e8eefd', outline='black', width=3)
-    
+    # if not app.startButtonClicked:
+    #     drawCover(app, canvas)
 
-    drawBoard(app, canvas)
-    drawDice(app, canvas)
-    drawBuilding(app, canvas)
-    drawBuildingInfo(app, canvas)
-    
+    # else:
+
+        canvas.create_rectangle(0, 0, app.width, app.height, 
+                                fill = '#40449b', outline='black')
+        canvas.create_rectangle(app.startLocation[0], app.startLocation[1], app.boardSize, app.boardSize, 
+                                fill = '#e8eefd', outline='black', width=1)
+                
+        
+        drawBackground(app, canvas)  # XS
+        drawBoard(app, canvas)
+        drawDice(app, canvas)
+        drawRoll(app, canvas)   # XS
+        drawBuilding(app, canvas)
+        drawBuildingInfo(app, canvas)
+        drawYesNo(app, canvas)  # XS
+        drawMoney(app, canvas)  # XS
+        drawPrice(app, canvas)  # XS
+
+
+
+        
+
 
 
 def play():
     runApp(width = 1200, height = 780)
 
 play()
+
+
+
+
+
 
