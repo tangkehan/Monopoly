@@ -125,7 +125,7 @@ class Building():
     def drawInfo(self, app, canvas):
         x1 = app.boardSize + 30
         x2 = app.width - 70
-        canvas.create_rectangle(x1, 0.5 * app.height, x2, 0.5 * app.height + 360,
+        canvas.create_rectangle(x1, 0.5 * app.height, x2, 0.5 * app.height + 340,
                               fill = '#e8eefd', outline='black', width=0)
         
         # small rectangle

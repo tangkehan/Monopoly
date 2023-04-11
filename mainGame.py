@@ -21,7 +21,7 @@ def startInf(app):
     app.themeImage = Image.open('resource/theme.png')
     app.startButtonLocation = (app.width/2, app.height/2)
     app.startUpImage = app.loadImage('resource/startUp.png')
-    app.startUpImage = app.scaleImage(app.startUpImage, 0.04).filter(ImageFilter.SMOOTH)
+    app.startUpImage = app.scaleImage(app.startUpImage, 0.06).filter(ImageFilter.SMOOTH)
     # app.startDownImage = app.loadImage('resource/startDown.png')
     # app.startDownImage = app.scaleImage(app.startDownImage, 0.08).filter(ImageFilter.SMOOTH)
     app.playButtonLocation = [app.width/2 - 50, app.height/2 + 50]
@@ -97,7 +97,7 @@ def gameInf(app):
 
     app.diceLocation = (app.cornerSize + app.gridHeight, app.boardSize - app.cornerSize - app.gridHeight + 20)
     app.diceImage = app.loadImage('side6.png')
-    app.diceImage = app.scaleImage(app.diceImage, 0.5)
+    app.diceImage = app.scaleImage(app.diceImage, 0.6)
     app.rollNumber = -1
 
     # XS: draw screen needs 3 steps : load, draw, call
@@ -115,13 +115,13 @@ def gameInf(app):
     app.noImage = app.scaleImage(app.noImage, 0.2).filter(ImageFilter.SMOOTH)
 
     # XS load money_player, money_computer button 
-    app.moneyPlayerLocation = (2 * app.cornerSize + 7 * app.gridHeight + 100, 0.8 * app.gridHeight)
+    app.moneyPlayerLocation = (2 * app.cornerSize + 7 * app.gridHeight + 100, 1.3 * app.gridHeight)
     app.moneyPlayerImage = app.loadImage('resource/money_player.png')
-    app.moneyPlayerImage = app.scaleImage(app.moneyPlayerImage, 0.4).filter(ImageFilter.SMOOTH)
+    app.moneyPlayerImage = app.scaleImage(app.moneyPlayerImage, 0.8).filter(ImageFilter.SMOOTH)
 
-    app.moneyComLocation = (2 * app.cornerSize + 7 * app.gridHeight + 100, 200)
+    app.moneyComLocation = (2 * app.cornerSize + 7 * app.gridHeight + 100, 250)
     app.moneyComImage = app.loadImage('resource/money_com.png')
-    app.moneyComImage = app.scaleImage(app.moneyComImage, 0.4).filter(ImageFilter.SMOOTH)
+    app.moneyComImage = app.scaleImage(app.moneyComImage, 0.8).filter(ImageFilter.SMOOTH)
 
 
     # XS load price button image
@@ -142,6 +142,10 @@ def gameInf(app):
 
     app.taxImage = app.loadImage('resource/Tax.png')
     app.taxImage = app.scaleImage(app.taxImage, 0.3).filter(ImageFilter.SMOOTH)
+
+    app.exitLocation = (app.width - 30, app.height - 30)
+    app.exitImage = app.loadImage('resource/exit.png')
+    app.exitImage = app.scaleImage(app.exitImage, 0.2).filter(ImageFilter.SMOOTH)
 
    
 
@@ -168,18 +172,26 @@ def drawYesNo(app, canvas):
     
     canvas.create_image(app.noLocation[0],app.noLocation[1],
                          image=ImageTk.PhotoImage(app.noImage))
+    
+def drawExit(app, canvas):
+
+    canvas.create_image(app.exitLocation[0], app.exitLocation[1],
+                        image=ImageTk.PhotoImage(app.exitImage))
+    
+    canvas.create_text(app.exitLocation[0] - 45, app.exitLocation[1], 
+                       text = 'EXIT', font='Courier 12 bold', fill = 'white')
 
 # Kehan: add the player name and computer name， Need to add more detail later
 # XS draw two money button  
 def drawMoney(app, canvas):
     canvas.create_image(app.moneyPlayerLocation[0],app.moneyPlayerLocation[1],
                          image=ImageTk.PhotoImage(app.moneyPlayerImage))
-    canvas.create_text(app.moneyPlayerLocation[0], app.moneyPlayerLocation[1], 
-                       text = app.name, font='Courier 28 bold', fill = 'black')
+    canvas.create_text(app.moneyPlayerLocation[0], app.moneyPlayerLocation[1] - 40, 
+                       text = app.name, font='Courier 12 bold', fill = '#88f2c4')
     canvas.create_image(app.moneyComLocation[0],app.moneyComLocation[1],
                          image=ImageTk.PhotoImage(app.moneyComImage))
-    canvas.create_text(app.moneyComLocation[0],app.moneyComLocation[1], 
-                       text = 'Computer', font='Courier 28 bold', fill = 'black')
+    canvas.create_text(app.moneyComLocation[0],app.moneyComLocation[1] - 40, 
+                       text = 'Computer', font='Courier 12 bold', fill = '#e8cffb')
 
 def drawPrice(app, canvas):
 
@@ -299,8 +311,8 @@ def drawDice(app, canvas):
                          image=ImageTk.PhotoImage(app.diceImage))
    
     if app.rollNumber > 0:
-        canvas.create_text(app.diceLocation[0],app.diceLocation[1],
-                         text = app.rollNumber, fill='black', font='Courier 30 bold')
+        canvas.create_text(app.diceLocation[0],app.diceLocation[1] - 25,
+                         text = app.rollNumber, fill='#1459ff', font='Courier 30 bold')
 
 
 
@@ -326,6 +338,14 @@ def gameMode_mousePressed(app, event):
     # XS changed : click the "Roll" to roll the dice
     if ((x - app.rollLocation[0]) ** 2 + (y - app.rollLocation[1]) ** 2) ** 0.5 <= 45:
         rollDice(app)
+
+    
+    x1 = app.exitLocation[0] - 65
+    x2 = app.exitLocation[0] + 65
+    y1 = app.exitLocation[1] - 30
+    y2 = app.exitLocation[1] + 40
+    if x >= x1 and x <= x2 and y >= y1 and y <= y2:
+        app.mode = 'startMode'
      
 
 
@@ -435,6 +455,7 @@ def gameMode_redrawAll(app, canvas):
     drawBuildingInfo(app, canvas)
     drawMoney(app, canvas)  # XS
     drawPrice(app, canvas)  # XS
+    drawExit(app, canvas)   # XS
 
 
 
