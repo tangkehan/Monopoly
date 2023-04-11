@@ -7,8 +7,9 @@ This is a simplified monopoly game.
 2. Walking past the place where the player can buy, press y to buy a land.
 3. After purchase, mark the owne color at the bottom of the building card.
 Press n then pass, if player walk past the computer's land, then player needs to pay rent.
-4.Once encountering "jail", player be put into a cell, and be paused for a round.
-5. Walking through the "Tax" area need to pay taxes, if bankruptcy will be the end of the game
+4. Once encountering "go to jail", player be put into a Jail, and be paused for a round.
+5. If the player walks normally and lands on the "Jail" grid, they are merely "visiting" the Jail and do not incur any penalty. On the next turn, they can roll the dice as usual and continue the game.
+6. Walking through the "Tax" area need to pay taxes, if bankruptcy will be the end of the game
 
 
 How to play:
