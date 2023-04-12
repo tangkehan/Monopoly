@@ -1,9 +1,11 @@
 from cmu_112_graphics import *
-from Building import *
+from building import *
 from Chance import *
 from MagicTax import *
 from Corner import*
 import random
+from player_module import Player
+import time
 
 
 # import pygame
@@ -25,6 +27,7 @@ def startInf(app):
     # app.startDownImage = app.loadImage('resource/startDown.png')
     # app.startDownImage = app.scaleImage(app.startDownImage, 0.08).filter(ImageFilter.SMOOTH)
     app.playButtonLocation = [app.width/2 - 50, app.height/2 + 50]
+    app.name = None
 
 
 # Kehan : add the start mode mouse press and add the name part
@@ -91,6 +94,13 @@ def gameInf(app):
     app.boardSize = 2 * app.cornerSize + (app.row - 2) * app.gridHeight + app.startLocation[0]
     
     app.corner, app.up, app.down, app.left, app.right = getAllLocation(app)
+    app.loc_lst = {
+        'corner': app.corner,
+        'up': app.up,
+        'down': app.down,
+        'right': app.right,
+        'left': app.left
+    }
     app.buildings = []
     app.map = assignBuildings(app)
     app.click = None
@@ -105,6 +115,13 @@ def gameInf(app):
     app.rollLocation = (app.cornerSize + 5 * app.gridHeight, app.boardSize - app.cornerSize - app.gridHeight + 20)
     app.rollImage = app.loadImage('resource/Roll.png')
     app.rollImage = app.scaleImage(app.rollImage, 0.03).filter(ImageFilter.SMOOTH)
+    
+    # Shes load Player image
+    app.playerImage = app.loadImage('resource/player.png')
+    app.playerImage = app.scaleImage(app.playerImage, 0.02).filter(ImageFilter.SMOOTH)
+    app.playerAiImage = app.loadImage('resource/com.png')
+    app.playerAiImage = app.scaleImage(app.playerAiImage, 0.02).filter(ImageFilter.SMOOTH)
+
 
     app.yesLocation = (2 * app.cornerSize + 6 * app.gridHeight + 120, app.boardSize - 80)
     app.yesImage = app.loadImage('resource/YES.png')
@@ -300,9 +317,25 @@ def assignBuildings(app):
             parking, red01, red02, blue01, tax03, blue02, chance04,
             go_to_jail, tax04, chance05, purple01, tax05, purple02, purple03]
     return map
+    
+
+
 
 def rollDice(app):
     app.rollNumber = random.randint(1, 6)
+    # Shes
+    # Move the players
+    app.current_player_id += 1 
+    app.current_player_id %= len(app.players)
+    app.players[app.current_player_id].move_player(app.rollNumber)
+    next_player_id = (app.current_player_id + 1)%len(app.players)
+    if not app.players[next_player_id].isPlayer:
+        app.start = time.time() * 1000
+    else:
+        app.start = 0
+    
+
+        
     
 
 def drawDice(app, canvas):
@@ -314,7 +347,9 @@ def drawDice(app, canvas):
         canvas.create_text(app.diceLocation[0],app.diceLocation[1] - 25,
                          text = app.rollNumber, fill='#1459ff', font='Courier 30 bold')
 
-
+def gameMode_timerFired(app):
+    if app.start != 0 and time.time() * 1000 - app.start > app.comp_delay:
+        rollDice(app)
 
 def gameMode_mousePressed(app, event):
     x = event.x
@@ -432,9 +467,18 @@ def drawBoard(app, canvas):
     canvas.create_image(x + 1.5 * app.cornerSize + 6 * app.gridHeight, y + 1.5 * app.cornerSize + 6 * app.gridHeight,
                         image=ImageTk.PhotoImage(app.goImage))
 
-
-        
-
+# Shes draw player on canvas
+def drawPlayer(app, canvas):
+    offset = 20
+    float_mid_id = (len(app.players) - 1) / 2.0
+    for i in range(len(app.players)):
+        player = app.players[i]
+        offset_value = (i - float_mid_id) * offset
+        if player.isPlayer:
+            canvas.create_image(player.position.location[0] + offset_value, player.position.location[1], image=ImageTk.PhotoImage(app.playerImage))
+        else:
+            canvas.create_image(player.position.location[0] + offset_value, player.position.location[1], image=ImageTk.PhotoImage(app.playerAiImage))
+    
 # XS :
 # If the game does not start, the screen shows the theme cover
 # If you click "play", the game will start and the game interface will be displayed
@@ -456,6 +500,21 @@ def gameMode_redrawAll(app, canvas):
     drawMoney(app, canvas)  # XS
     drawPrice(app, canvas)  # XS
     drawExit(app, canvas)   # XS
+    drawPlayer(app, canvas) # Shes
+    
+    
+# Shes
+# update the player part
+def initPlayers(app):
+    app.players = []
+    player_1 = Player("player", True, app.loc_lst)
+    app.players.append(player_1)
+    player_ai = Player("computer", False, app.loc_lst)
+    app.players.append(player_ai)
+    app.current_player_id = -1
+    app.comp_delay = 2000
+    app.start = 0
+
 
 
 
@@ -465,7 +524,8 @@ def appStarted(app):
     app.mode = 'startMode'
 
     startInf(app)
-    gameInf(app)   
+    gameInf(app)
+    initPlayers(app)
 
 
 
@@ -473,9 +533,5 @@ def play():
     runApp(width = 1200, height = 780)
 
 play()
-
-
-
-
 
 
