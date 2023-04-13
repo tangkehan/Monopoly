@@ -6,9 +6,10 @@ from Corner import*
 import random
 from Player import*
 import time
+from Sound import*
 
 
-# import pygame
+import pygame
 import sys
 
 from PIL import ImageFilter  # XS
@@ -39,6 +40,7 @@ def startMode_mousePressed(app, event):
     y2 = app.playButtonLocation[1] + 40
     if x >= x1 and x <= x2 and y >= y1 and y <= y2:
         app.mode = 'gameMode'
+        sucess.playSound()
 
     (x, y) = app.enterNameButtonLocation
     d1 = ((x - event.x)**2 + (y - event.y)** 2) ** 0.5
@@ -399,6 +401,7 @@ def gameMode_mousePressed(app, event):
     if ((x - app.rollLocation[0]) ** 2 + (y - app.rollLocation[1]) ** 2) ** 0.5 <= 45:
         if app.whosTurn == 'player' and app.player.isMove == False:
             app.rollNumber = app.player.rollDice()
+            click.playSound()
             app.noticeMessage = f" You got {app.rollNumber} !"
             app.player.isMove = True
 
@@ -408,6 +411,7 @@ def gameMode_mousePressed(app, event):
        y >= app.finishButton[1] - 25 and y <= app.finishButton[1] + 25):
         if app.whosTurn == 'ai' and  app.ai.isMove == False:
             app.rollNumber = app.ai.rollDice()
+            click.playSound()
             app.noticeMessage = f" Computer got {app.rollNumber} !"  
             app.ai.isMove = True
 
@@ -550,6 +554,7 @@ def gameMode_redrawAll(app, canvas):
 
 # The whole game running start here
 def appStarted(app):
+
     app.mode = 'startMode'
 
     startInf(app)
@@ -559,6 +564,7 @@ def appStarted(app):
 
 
 def play():
+    
     runApp(width = 1200, height = 780)
 
 play()
