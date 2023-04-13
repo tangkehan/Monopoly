@@ -1,12 +1,14 @@
 from cmu_112_graphics import *
-from Building import *
+from building import *
 from Chance import *
 from MagicTax import *
 from Corner import*
 import random
 
+import Sound
 
-# import pygame
+
+import pygame
 import sys
 
 from PIL import ImageFilter  # XS
@@ -466,6 +468,16 @@ def appStarted(app):
 
     startInf(app)
     gameInf(app)   
+
+    #Peiwen
+    #load sounds
+    pygame.mixer.init()
+    event = pygame.mixer.Sound("sounds/sound_事件.wav")
+    click = pygame.mixer.Sound("sounds/sound_按键.wav")
+    update = pygame.mixer.Sound("sounds/sound_升级.wav")
+    fail = pygame.mixer.Sound("sounds/sound_失败.wav")
+    sucess = pygame.mixer.Sound("sounds/sound_失败.wav")
+    event.play()
 
 
 
