@@ -5,7 +5,6 @@ from MagicTax import *
 from Corner import*
 import random
 
-import Sound
 
 
 import pygame
