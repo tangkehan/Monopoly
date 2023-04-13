@@ -4,10 +4,11 @@ from Chance import *
 from MagicTax import *
 from Corner import*
 import random
+from Player import*
+import time
 
 
-
-import pygame
+# import pygame
 import sys
 
 from PIL import ImageFilter  # XS
@@ -26,6 +27,7 @@ def startInf(app):
     # app.startDownImage = app.loadImage('resource/startDown.png')
     # app.startDownImage = app.scaleImage(app.startDownImage, 0.08).filter(ImageFilter.SMOOTH)
     app.playButtonLocation = [app.width/2 - 50, app.height/2 + 50]
+    app.name = None
 
 
 # Kehan : add the start mode mouse press and add the name part
@@ -92,6 +94,13 @@ def gameInf(app):
     app.boardSize = 2 * app.cornerSize + (app.row - 2) * app.gridHeight + app.startLocation[0]
     
     app.corner, app.up, app.down, app.left, app.right = getAllLocation(app)
+    app.loc_lst = {
+        'corner': app.corner,
+        'up': app.up,
+        'down': app.down,
+        'right': app.right,
+        'left': app.left
+    }
     app.buildings = []
     app.map = assignBuildings(app)
     app.click = None
@@ -105,7 +114,17 @@ def gameInf(app):
     # 1st: load Roll, yes, no button
     app.rollLocation = (app.cornerSize + 5 * app.gridHeight, app.boardSize - app.cornerSize - app.gridHeight + 20)
     app.rollImage = app.loadImage('resource/Roll.png')
-    app.rollImage = app.scaleImage(app.rollImage, 0.03).filter(ImageFilter.SMOOTH)
+    app.rollImage = app.scaleImage(app.rollImage, 0.02).filter(ImageFilter.SMOOTH)
+
+    # Kehan: add round finish button
+    app.finishButton = (app.rollLocation[0],  app.rollLocation[1] - 70)
+    
+    # Shes load Player image
+    app.playerImage = app.loadImage('resource/player.png')
+    app.playerImage = app.scaleImage(app.playerImage, 0.02).filter(ImageFilter.SMOOTH)
+    app.playerAiImage = app.loadImage('resource/com.png')
+    app.playerAiImage = app.scaleImage(app.playerAiImage, 0.02).filter(ImageFilter.SMOOTH)
+
 
     app.yesLocation = (2 * app.cornerSize + 6 * app.gridHeight + 120, app.boardSize - 80)
     app.yesImage = app.loadImage('resource/YES.png')
@@ -166,6 +185,16 @@ def drawRoll(app, canvas):
     canvas.create_image(app.rollLocation[0],app.rollLocation[1],
                          image=ImageTk.PhotoImage(app.rollImage))
     
+def drawFinish(app, canvas):
+    canvas.create_rectangle(app.finishButton[0] - 50, app.finishButton[1] - 25,
+                            app.finishButton[0] + 50, app.finishButton[1] + 25,
+                         outline = 'black')
+    canvas.create_text(app.finishButton[0], app.finishButton[1], text = 'Finish!',
+                       fill='#1459ff', font='Courier 20 bold')
+                     
+    
+
+  
 def drawYesNo(app, canvas):
 
     canvas.create_image(app.yesLocation[0],app.yesLocation[1],
@@ -296,25 +325,57 @@ def assignBuildings(app):
     tax05 = MagicTax(app.right[3], 200)
 
 
-    map = [go, green01, green02, green03, chance01, tax01, chance02, 
-            jail, yellow01, yellow02, chance03, orange01, tax02, orange02,
+    map = [go, green01, green02, green03, chance02, tax01, chance01, 
+            jail, yellow02, yellow01, chance03, orange02, tax02, orange01,
             parking, red01, red02, blue01, tax03, blue02, chance04,
             go_to_jail, tax04, chance05, purple01, tax05, purple02, purple03]
     return map
-
-def rollDice(app):
-    app.rollNumber = random.randint(1, 6)
     
 
-def drawDice(app, canvas):
 
-    canvas.create_image(app.diceLocation[0],app.diceLocation[1],
-                         image=ImageTk.PhotoImage(app.diceImage))
+    
+# Shes
+def initPlayers(app):
+    app.timerDelay = 500
+    app.whosTurn = 'player'
+
+    app.player = Player(app.name, True,  app.map)
+    app.playerLocation = app.player.currentLocation
+    
+    app.ai = Player('ai', False, app.map)
+    app.aiLocation = app.ai.currentLocation    
+ 
+
+
+
+#  timerFired 里是枚0.5秒重画一切所有
+# 在这里进行买房 被收租的操作，感觉可以写在move a step里面
+# 当走到最后一步的时候， 查看building type, 如果买了地，
+# 则需要把地的下半截涂颜色，在building里已经写好了d rawOwner(self, app, canvas)
+
+def gameMode_timerFired(app):
+    if app.whosTurn == 'player':
+        app.player.player_moveAStep(app)
    
-    if app.rollNumber > 0:
-        canvas.create_text(app.diceLocation[0],app.diceLocation[1] - 25,
-                         text = app.rollNumber, fill='#1459ff', font='Courier 30 bold')
+    if app.whosTurn == 'ai':
+        app.ai.ai_moveAStep(app)
 
+ 
+  
+# Shes:
+def drawPlayer(app, canvas):
+    offset = 20
+    float_mid_id = 1 / 2.0
+    offset_value = (0 - float_mid_id) * offset
+    canvas.create_image(app.player.currentLocation[0] + offset_value, app.player.currentLocation[1], 
+                                    image=ImageTk.PhotoImage(app.playerImage))
+    
+def drawAi(app, canvas):
+    offset = 20
+    float_mid_id = 1 / 2.0
+    offset_value = (1 - float_mid_id) * offset
+    canvas.create_image(app.ai.currentLocation[0] + offset_value, app.ai.currentLocation[1], 
+                                    image=ImageTk.PhotoImage(app.playerAiImage))
 
 
 def gameMode_mousePressed(app, event):
@@ -332,13 +393,24 @@ def gameMode_mousePressed(app, event):
                 continue
         continue
 
-    # click the dice to roll the dice
-    # if ((x - app.diceLocation[0]) ** 2 + (y - app.diceLocation[1]) ** 2) ** 0.5 <= 45:
-    #     rollDice(app)
 
     # XS changed : click the "Roll" to roll the dice
+    # Kehan : if is playe's turn , click the dice to roll
     if ((x - app.rollLocation[0]) ** 2 + (y - app.rollLocation[1]) ** 2) ** 0.5 <= 45:
-        rollDice(app)
+        if app.whosTurn == 'player' and app.player.isMove == False:
+            app.rollNumber = app.player.rollDice()
+            app.noticeMessage = f" You got {app.rollNumber} !"
+            app.player.isMove = True
+
+      
+    # Kehan: afrer the player click the finish button , it's computer's turn
+    if(x >= app.finishButton[0] - 50 and x <= app.finishButton[0] + 50 and 
+       y >= app.finishButton[1] - 25 and y <= app.finishButton[1] + 25):
+        if app.whosTurn == 'ai' and  app.ai.isMove == False:
+            app.rollNumber = app.ai.rollDice()
+            app.noticeMessage = f" Computer got {app.rollNumber} !"  
+            app.ai.isMove = True
+
 
     
     x1 = app.exitLocation[0] - 65
@@ -348,6 +420,20 @@ def gameMode_mousePressed(app, event):
     if x >= x1 and x <= x2 and y >= y1 and y <= y2:
         app.mode = 'startMode'
      
+
+# Kehan: add the notice message
+def drawDice(app, canvas):
+    canvas.create_image(app.diceLocation[0],app.diceLocation[1],
+                         image=ImageTk.PhotoImage(app.diceImage))
+   
+    if app.rollNumber > 0:
+        canvas.create_text(app.diceLocation[0],app.diceLocation[1] - 25,
+                         text = app.rollNumber, fill='#1459ff', font='Courier 30 bold')
+        if app.noticeMessage != None:
+            canvas.create_text(app.diceLocation[0], app.diceLocation[1] + 50, 
+                              text = app.noticeMessage, fill='#1459ff', font='Courier 15 bold' )
+
+
 
 
 def drawBuilding(app,canvas):
@@ -434,8 +520,7 @@ def drawBoard(app, canvas):
                         image=ImageTk.PhotoImage(app.goImage))
 
 
-        
-
+    
 # XS :
 # If the game does not start, the screen shows the theme cover
 # If you click "play", the game will start and the game interface will be displayed
@@ -457,8 +542,10 @@ def gameMode_redrawAll(app, canvas):
     drawMoney(app, canvas)  # XS
     drawPrice(app, canvas)  # XS
     drawExit(app, canvas)   # XS
-
-
+    drawPlayer(app, canvas) # Shes
+    drawAi(app, canvas) # Kehan
+    drawFinish(app, canvas) #Kehan
+    
 
 
 # The whole game running start here
@@ -466,17 +553,8 @@ def appStarted(app):
     app.mode = 'startMode'
 
     startInf(app)
-    gameInf(app)   
-
-    #Peiwen
-    #load sounds
-    pygame.mixer.init()
-    event = pygame.mixer.Sound("sounds/sound_事件.wav")
-    click = pygame.mixer.Sound("sounds/sound_按键.wav")
-    update = pygame.mixer.Sound("sounds/sound_升级.wav")
-    fail = pygame.mixer.Sound("sounds/sound_失败.wav")
-    sucess = pygame.mixer.Sound("sounds/sound_失败.wav")
-    event.play()
+    gameInf(app)
+    initPlayers(app)
 
 
 
@@ -484,9 +562,5 @@ def play():
     runApp(width = 1200, height = 780)
 
 play()
-
-
-
-
 
 
