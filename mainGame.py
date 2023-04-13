@@ -112,12 +112,14 @@ def gameInf(app):
 
     # XS: draw screen needs 3 steps : load, draw, call
     # 1st: load Roll, yes, no button
-    app.rollLocation = (app.cornerSize + 5 * app.gridHeight, app.boardSize - app.cornerSize - app.gridHeight + 20)
+    app.rollLocation = (app.cornerSize + 4.5 * app.gridHeight, app.boardSize - app.cornerSize - app.gridHeight + 20)
     app.rollImage = app.loadImage('resource/Roll.png')
-    app.rollImage = app.scaleImage(app.rollImage, 0.02).filter(ImageFilter.SMOOTH)
+    app.rollImage = app.scaleImage(app.rollImage, 0.027).filter(ImageFilter.SMOOTH)
 
     # Kehan: add round finish button
-    app.finishButton = (app.rollLocation[0],  app.rollLocation[1] - 70)
+    app.finishButton = (app.rollLocation[0] + 95,  app.rollLocation[1] + 7)
+    app.finishImage = app.loadImage('resource/finish.png')
+    app.finishImage = app.scaleImage(app.finishImage, 0.02).filter(ImageFilter.SMOOTH)
     
     # Shes load Player image
     app.playerImage = app.loadImage('resource/player.png')
@@ -167,15 +169,43 @@ def gameInf(app):
     app.exitImage = app.loadImage('resource/exit.png')
     app.exitImage = app.scaleImage(app.exitImage, 0.2).filter(ImageFilter.SMOOTH)
 
-   
+    app.chanceRewardsLocation = (app.cornerSize + 3 * app.gridHeight, app.cornerSize + 2.6 * app.gridHeight)
+    app.chanceRewardsImage = app.loadImage('resource/chance_Rewards.png')
+    app.chanceRewardsImage = app.scaleImage(app.chanceRewardsImage, 0.2)
+    app.chancePenaltyLocation = (app.cornerSize + 3 * app.gridHeight, app.cornerSize + 2.7 * app.gridHeight)
+    app.chancePenaltyImage = app.loadImage('resource/chance_Penalty.png')
+    app.chancePenaltyImage = app.scaleImage(app.chancePenaltyImage, 0.2)
 
-    # x, y = app.width/2 - 50, app.height/2 + 50
-    # app.startButtonRect = pygame.Rect(x, y, app.startUpImage.width, app.startUpImage.height)
-    # app.startButtonClicked = False
+    app.winLocation = (app.width / 2, app.height / 2)
+    app.winImage = app.loadImage('resource/win.png')
+    app.winImage = app.scaleImage(app.winImage, 0.38)
+
+    app.loseLocation = (app.width / 2, app.height / 2)
+    app.loseImage = app.loadImage('resource/lose.png')
+    app.loseImage = app.scaleImage(app.loseImage, 0.23)
 
 
     app.playerTurn = True
     app.isGameOver = False
+
+
+
+def drawChanceRewards(app, canvas):
+
+    canvas.create_image(app.chanceRewardsLocation[0], app.chanceRewardsLocation[1],
+                        image=ImageTk.PhotoImage(app.chanceRewardsImage))
+    
+    canvas.create_text(app.chanceRewardsLocation[0] + 10, app.chanceRewardsLocation[1] - 45, 
+                       text = 'Rewards', font='Courier 16 bold', fill = '#3838FC')
+
+
+def drawChancePenalty(app, canvas):
+
+    canvas.create_image(app.chancePenaltyLocation[0], app.chancePenaltyLocation[1],
+                        image=ImageTk.PhotoImage(app.chancePenaltyImage))
+    
+    canvas.create_text(app.chancePenaltyLocation[0] - 10, app.chancePenaltyLocation[1] - 63, 
+                       text = 'Fine', font='Courier 17 bold', fill = '#FF7F00')   
 
 
   
@@ -186,13 +216,15 @@ def drawRoll(app, canvas):
                          image=ImageTk.PhotoImage(app.rollImage))
     
 def drawFinish(app, canvas):
-    canvas.create_rectangle(app.finishButton[0] - 50, app.finishButton[1] - 25,
-                            app.finishButton[0] + 50, app.finishButton[1] + 25,
-                         outline = 'black')
-    canvas.create_text(app.finishButton[0], app.finishButton[1], text = 'Finish!',
-                       fill='#1459ff', font='Courier 20 bold')
-                     
+    # canvas.create_rectangle(app.finishButton[0] - 50, app.finishButton[1] - 25,
+    #                         app.finishButton[0] + 50, app.finishButton[1] + 25,
+    #                      outline = 'black')
     
+    # canvas.create_text(app.finishButton[0], app.finishButton[1], text = 'Finish!',
+    #                    fill='#1459ff', font='Courier 20 bold')
+                     
+    canvas.create_image(app.finishButton[0],app.finishButton[1],
+                         image=ImageTk.PhotoImage(app.finishImage))
 
   
 def drawYesNo(app, canvas):
@@ -227,6 +259,10 @@ def drawPrice(app, canvas):
 
     canvas.create_image(app.priceLocation[0],app.priceLocation[1],
                          image=ImageTk.PhotoImage(app.priceImage))
+    
+
+
+    
 
 # XS draw background
 def drawBackground(app, canvas):
@@ -234,6 +270,15 @@ def drawBackground(app, canvas):
     backgroundPhoto = ImageTk.PhotoImage(backgroundImage)
     canvas.create_image(0, 0, anchor="nw", image=backgroundPhoto)
     canvas.lower("all")
+
+def drawWin(app, canvas):
+    canvas.create_image(app.winLocation[0],app.winLocation[1],
+                         image=ImageTk.PhotoImage(app.winImage))
+    
+def drawLose(app, canvas):
+    canvas.create_image(app.loseLocation[0],app.loseLocation[1],
+                         image=ImageTk.PhotoImage(app.loseImage))
+    
 
 
 def getAllLocation(app):
@@ -348,7 +393,7 @@ def initPlayers(app):
 
 
 
-#  timerFired 里是枚0.5秒重画一切所有
+#  timerFired 里是每0.5秒重画一切所有
 # 在这里进行买房 被收租的操作，感觉可以写在move a step里面
 # 当走到最后一步的时候， 查看building type, 如果买了地，
 # 则需要把地的下半截涂颜色，在building里已经写好了d rawOwner(self, app, canvas)
@@ -403,7 +448,7 @@ def gameMode_mousePressed(app, event):
             app.player.isMove = True
 
       
-    # Kehan: afrer the player click the finish button , it's computer's turn
+    # Kehan: after the player click the finish button , it's computer's turn
     if(x >= app.finishButton[0] - 50 and x <= app.finishButton[0] + 50 and 
        y >= app.finishButton[1] - 25 and y <= app.finishButton[1] + 25):
         if app.whosTurn == 'ai' and  app.ai.isMove == False:
@@ -420,6 +465,11 @@ def gameMode_mousePressed(app, event):
     if x >= x1 and x <= x2 and y >= y1 and y <= y2:
         app.mode = 'startMode'
      
+# XS : When the game is over, press "P" to go back to the cover and start the next round
+def gameMode_keyPressed(app, event):
+    if (event.key == 'r'):
+        app.mode = 'startMode'
+
 
 # Kehan: add the notice message
 def drawDice(app, canvas):
@@ -545,10 +595,15 @@ def gameMode_redrawAll(app, canvas):
     drawPlayer(app, canvas) # Shes
     drawAi(app, canvas) # Kehan
     drawFinish(app, canvas) #Kehan
-    
+    # drawChanceRewards(app, canvas)
+    # drawChancePenalty(app, canvas)  # XS
+    # drawWin(app, canvas)    # XS
+    drawLose(app, canvas)   # XS
 
 
-# The whole game running start here
+
+
+############################### whole game running start here #############################
 def appStarted(app):
     app.mode = 'startMode'
 
