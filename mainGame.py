@@ -140,10 +140,12 @@ def gameInf(app):
     app.moneyPlayerLocation = (2 * app.cornerSize + 7 * app.gridHeight + 100, 1.3 * app.gridHeight)
     app.moneyPlayerImage = app.loadImage('resource/money_player.png')
     app.moneyPlayerImage = app.scaleImage(app.moneyPlayerImage, 0.8).filter(ImageFilter.SMOOTH)
+    
 
     app.moneyComLocation = (2 * app.cornerSize + 7 * app.gridHeight + 100, 250)
     app.moneyComImage = app.loadImage('resource/money_com.png')
     app.moneyComImage = app.scaleImage(app.moneyComImage, 0.8).filter(ImageFilter.SMOOTH)
+    
 
 
     # XS load price button image
@@ -220,10 +222,17 @@ def drawMoney(app, canvas):
                          image=ImageTk.PhotoImage(app.moneyPlayerImage))
     canvas.create_text(app.moneyPlayerLocation[0], app.moneyPlayerLocation[1] - 40, 
                        text = app.name, font='Courier 12 bold', fill = '#88f2c4')
+    #Peiwen draw remain money
+    canvas.create_text(app.moneyPlayerLocation[0], app.moneyPlayerLocation[1], 
+                       text = app.player.getCurrMoney(), font='Courier 20 bold', fill = '#000000')
+
     canvas.create_image(app.moneyComLocation[0],app.moneyComLocation[1],
                          image=ImageTk.PhotoImage(app.moneyComImage))
     canvas.create_text(app.moneyComLocation[0],app.moneyComLocation[1] - 40, 
                        text = 'Computer', font='Courier 12 bold', fill = '#e8cffb')
+    #peiwen draw AI remain money
+    canvas.create_text(app.moneyComLocation[0], app.moneyComLocation[1], 
+                       text = app.ai.getCurrMoney(), font='Courier 20 bold', fill = '#000000')
 
 def drawPrice(app, canvas):
 
