@@ -28,6 +28,7 @@ def startInf(app):
     # app.startDownImage = app.loadImage('resource/startDown.png')
     # app.startDownImage = app.scaleImage(app.startDownImage, 0.08).filter(ImageFilter.SMOOTH)
     app.playButtonLocation = [app.width/2 - 50, app.height/2 + 50]
+    #app.name cannot be None, cuz we should use this name to creat message of a building
     app.name = None
 
 
@@ -106,6 +107,7 @@ def gameInf(app):
     app.buildings = []
     app.map = assignBuildings(app)
     app.click = None
+    app.clickyes = None
 
     app.diceLocation = (app.cornerSize + app.gridHeight, app.boardSize - app.cornerSize - app.gridHeight + 20)
     app.diceImage = app.loadImage('side6.png')
@@ -296,7 +298,7 @@ def assignBuildings(app):
     jail = Corner('jail', app.corner[2])    
     go = Corner('go', app.corner[3])
 
-
+    
     # initialize the down side building 
     green01 = Building('Sweet\nBakery', 'green yellow', app.down[-1], 'down', 150, 20)
     green02 = Building('Fruit\nStand', 'green yellow', app.down[-2], 'down', 180, 25)
@@ -350,6 +352,7 @@ def initPlayers(app):
     app.timerDelay = 500
     app.whosTurn = 'player'
 
+    #change app.name to a real name!!!
     app.player = Player(app.name, True,  app.map)
     app.playerLocation = app.player.currentLocation
     
@@ -367,10 +370,11 @@ def initPlayers(app):
 def gameMode_timerFired(app):
     if app.whosTurn == 'player':
         app.player.player_moveAStep(app)
+            
    
     if app.whosTurn == 'ai':
         app.ai.ai_moveAStep(app)
-
+    
  
   
 # Shes:
@@ -424,6 +428,14 @@ def gameMode_mousePressed(app, event):
             app.noticeMessage = f" Computer got {app.rollNumber} !"  
             app.ai.isMove = True
 
+    #Peiwen: click Yes button to buy building
+    if(x >= app.yesLocation[0] - 50 and x <= app.yesLocation[0] + 50 and 
+        y >= app.yesLocation[1] - 25 and y <= app.yesLocation[1] + 25):
+        app.clickyes = True
+        app.player.buyBuiding()
+        app.ai.buyBuiding()
+        update.playSound()
+    app.clickyes = False
 
     
     x1 = app.exitLocation[0] - 65

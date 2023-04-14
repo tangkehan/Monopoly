@@ -21,6 +21,11 @@ class Building():
         else:
             return self.owner
 
+    def addOwner(self,ownerName):
+        self.owner = ownerName
+        self.isBought = True
+        return self.isBought
+
 
     def getColorLocation(self, app):
         (x, y) = self.location

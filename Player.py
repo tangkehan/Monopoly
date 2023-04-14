@@ -1,8 +1,10 @@
 from cmu_112_graphics import *
 import random
-
+import building
 
 class Player:
+
+    
     def __init__(self, name, player,  map):
 
         self.name = name
@@ -10,6 +12,7 @@ class Player:
         self.player = player
         self.map = map
         self.money = 1500
+        self.index = 0
 
         # the start location is go
         self.currentLocation = self.map[0].location
@@ -17,7 +20,11 @@ class Player:
         self.rollNum = -1
         self.isMove = False
         self.endIndex = -1
-       
+
+        #magic list means additional bonus
+        self.magiclist=[0,4,5,6,7,10,12,14,18,20,21,22,23,25]
+        self.buildings = []
+    
     
     def rollDice(self):
         self.rollNum =  random.randint(1, 6)
@@ -28,6 +35,7 @@ class Player:
         if self.isMove:
             self.startIndex += 1
             self.startIndex %= 28
+            self.index +=1
             self.currentLocation = self.map[self.startIndex].location
         
         if self.startIndex == self.endIndex and self.isMove:
@@ -43,6 +51,7 @@ class Player:
         if self.isMove:
             self.startIndex += 1
             self.startIndex %= 28
+            self.index +=1
             self.currentLocation = self.map[self.startIndex].location
 
         if self.startIndex == self.endIndex and self.isMove:
@@ -61,10 +70,22 @@ class Player:
     
     #Peiwen: buy buildings
     #give current location
-    #check if bought if not: 弹窗
+    #check if bought if not: return
         #ask if you decide to buy the building 
-            #yes: 减钱、building list append the building
-
+            #yes: minus money, building list append the building
+    def buyBuiding(self):
+        #Peiwen: correct index every turn
+        if self.index>27:
+            self.index = self.index-27-1
+        if self.index in self.magiclist:
+            return
+        currBuilding = self.map[self.index]
+        if currBuilding.isBought == False:
+            self.buildings.append(currBuilding)
+            self.money -= currBuilding.price
+            currBuilding.addOwner(self.name)
+            currBuilding.getMessage()
+            
 
 
     
