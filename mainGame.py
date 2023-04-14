@@ -402,10 +402,10 @@ def initPlayers(app):
 
 def gameMode_timerFired(app):
     if app.whosTurn == 'player':
-        app.player.player_moveAStep(app)
+        app.player.moveAStep(app, 'ai')
    
     if app.whosTurn == 'ai':
-        app.ai.ai_moveAStep(app)
+        app.ai.moveAStep(app, 'player')
 
  
   
@@ -443,11 +443,15 @@ def gameMode_mousePressed(app, event):
 
     # XS changed : click the "Roll" to roll the dice
     # Kehan : if is playe's turn , click the dice to roll
+    # Shes add the roll massage in jail
     if ((x - app.rollLocation[0]) ** 2 + (y - app.rollLocation[1]) ** 2) ** 0.5 <= 45:
         if app.whosTurn == 'player' and app.player.isMove == False:
             app.rollNumber = app.player.rollDice()
             click.playSound()
-            app.noticeMessage = f" You got {app.rollNumber} !"
+            if app.player.in_jail == True:
+                app.noticeMessage = "You are not allowed to roll. "
+            else:
+                app.noticeMessage = f" You got {app.rollNumber} !"
             app.player.isMove = True
 
       
@@ -457,7 +461,10 @@ def gameMode_mousePressed(app, event):
         if app.whosTurn == 'ai' and  app.ai.isMove == False:
             app.rollNumber = app.ai.rollDice()
             click.playSound()
-            app.noticeMessage = f" Computer got {app.rollNumber} !"  
+            if app.ai.in_jail == True:
+                app.noticeMessage = "Ai player is not allowed to roll. "
+            else:
+                app.noticeMessage = f" Computer got {app.rollNumber} !"  
             app.ai.isMove = True
 
 
@@ -602,7 +609,7 @@ def gameMode_redrawAll(app, canvas):
     # drawChanceRewards(app, canvas)
     # drawChancePenalty(app, canvas)  # XS
     # drawWin(app, canvas)    # XS
-    drawLose(app, canvas)   # XS
+    # drawLose(app, canvas)   # XS
 
 
 
