@@ -29,13 +29,13 @@ class Player:
     def rollDice(self):
         self.rollNum =  random.randint(1, 6)
         self.endIndex = (self.startIndex + self.rollNum) % 28
+        self.index += self.rollNum
         return self.rollNum
     
     def player_moveAStep(self, app):
         if self.isMove:
             self.startIndex += 1
             self.startIndex %= 28
-            self.index +=1
             self.currentLocation = self.map[self.startIndex].location
         
         if self.startIndex == self.endIndex and self.isMove:
@@ -51,7 +51,6 @@ class Player:
         if self.isMove:
             self.startIndex += 1
             self.startIndex %= 28
-            self.index +=1
             self.currentLocation = self.map[self.startIndex].location
 
         if self.startIndex == self.endIndex and self.isMove:
