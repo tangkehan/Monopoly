@@ -29,7 +29,7 @@ def startInf(app):
     # app.startDownImage = app.scaleImage(app.startDownImage, 0.08).filter(ImageFilter.SMOOTH)
     app.playButtonLocation = [app.width/2 - 50, app.height/2 + 50]
     #app.name cannot be None, cuz we should use this name to creat message of a building
-    app.name = None
+    app.name = "player"
 
 
 # Kehan : add the start mode mouse press and add the name part
@@ -370,10 +370,13 @@ def initPlayers(app):
 def gameMode_timerFired(app):
     if app.whosTurn == 'player':
         app.player.player_moveAStep(app)
-            
+
    
     if app.whosTurn == 'ai':
         app.ai.ai_moveAStep(app)
+    
+    app.player.playerRent()
+    app.ai.aiRent()
     
  
   
@@ -436,6 +439,7 @@ def gameMode_mousePressed(app, event):
         app.ai.buyBuiding()
         update.playSound()
     app.clickyes = False
+
 
     
     x1 = app.exitLocation[0] - 65
@@ -571,7 +575,8 @@ def gameMode_redrawAll(app, canvas):
     drawAi(app, canvas) # Kehan
     drawFinish(app, canvas) #Kehan
     
-
+    app.player.playerRent()
+    app.ai.aiRent()
 
 # The whole game running start here
 def appStarted(app):
@@ -581,6 +586,7 @@ def appStarted(app):
     startInf(app)
     gameInf(app)
     initPlayers(app)
+    
 
 
 
