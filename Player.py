@@ -82,7 +82,7 @@ class Player:
             if type(b).__name__ == 'Chance':
                 self.chance_event()
                 print(self.money)
-            elif type(b).__name__ == 'MagicTax':
+            if type(b).__name__ == 'MagicTax':
                 self.tax_event()
                 print(self.money)
             elif hasattr(b, 'name') and b.name == 'go to jail':
@@ -105,10 +105,9 @@ class Player:
     # Shes change the Magic Tax and Chance to Enum
     def chance_event(self):
         self.money += random.choice(list(ChanceEvent)).value
-
     def tax_event(self):
         self.money += random.choice(list(TaxEvent)).value
-        print(self.money)
+        
 
 
 
