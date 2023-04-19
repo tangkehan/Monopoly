@@ -257,6 +257,18 @@ def drawMoney(app, canvas):
                          image=ImageTk.PhotoImage(app.moneyComImage))
     canvas.create_text(app.moneyComLocation[0],app.moneyComLocation[1] - 40, 
                        text = 'Computer', font='Courier 12 bold', fill = '#e8cffb')
+    #Peiwen draw remain money
+    canvas.create_text(app.moneyPlayerLocation[0], app.moneyPlayerLocation[1], 
+                       text = app.player.getCurrMoney(), font='Courier 20 bold', fill = '#000000')
+
+    canvas.create_image(app.moneyComLocation[0],app.moneyComLocation[1],
+                         image=ImageTk.PhotoImage(app.moneyComImage))
+    canvas.create_text(app.moneyComLocation[0],app.moneyComLocation[1] - 40, 
+                       text = 'Computer', font='Courier 12 bold', fill = '#e8cffb')
+    #peiwen draw AI remain money
+    canvas.create_text(app.moneyComLocation[0], app.moneyComLocation[1], 
+                       text = app.ai.getCurrMoney(), font='Courier 20 bold', fill = '#000000')
+    
 
 def drawPrice(app, canvas):
 
@@ -264,8 +276,6 @@ def drawPrice(app, canvas):
                          image=ImageTk.PhotoImage(app.priceImage))
     
 
-
-    
 
 # XS draw background
 def drawBackground(app, canvas):
@@ -408,8 +418,8 @@ def gameMode_timerFired(app):
     if app.whosTurn == 'ai':
         app.ai.moveAStep(app, 'player')
 
-        app.player.playerRent()
-        app.ai.aiRent()
+    app.player.playerRent()
+    app.ai.aiRent()
 
  
   
