@@ -52,6 +52,15 @@ class Player:
                     continue
                 building.reset()
         return self.rollNum
+    
+    
+    #Peiwen :current Money
+    def getCurrMoney(self):
+        #show current money in the pocket
+        if self.money > 0:
+            return self.money
+        else:
+            return -1
         
 
     def moveAStep(self, app, next_turn):
@@ -72,6 +81,9 @@ class Player:
             b = app.map[self.endIndex]
             if type(b).__name__ == 'Chance':
                 self.chance_event()
+                print(self.money)
+            elif type(b).__name__ == 'MagicTax':
+                self.tax_event()
                 print(self.money)
             elif hasattr(b, 'name') and b.name == 'go to jail':
                 jail, self.startIndex = self.find_jail()
@@ -96,15 +108,9 @@ class Player:
 
     def tax_event(self):
         self.money += random.choice(list(TaxEvent)).value
+        print(self.money)
 
 
-    #Peiwen :current Money
-    def getCurrMoney(self):
-        #show current money in the pocket
-        if self.money > 0:
-            return self.money
-        else:
-            return -1
 
     
     #Peiwen: buy buildings
@@ -144,4 +150,7 @@ class Player:
                 self.money -= rentfee
                 #lock the location in this turn, make sure rent the location only once
                 currLocation.isRent = True
+ 
+    
+
  
