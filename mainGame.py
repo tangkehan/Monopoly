@@ -619,10 +619,13 @@ def gameMode_redrawAll(app, canvas):
     drawPlayer(app, canvas) # Shes
     drawAi(app, canvas) # Kehan
     drawFinish(app, canvas) #Kehan
-    # drawChanceRewards(app, canvas)
-    # drawChancePenalty(app, canvas)  # XS
+    drawChanceRewards(app, canvas)
+    drawChancePenalty(app, canvas)  # XS
     # drawWin(app, canvas)    # XS
     # drawLose(app, canvas)   # XS
+
+    app.player.playerRent()
+    app.ai.aiRent()
 
 
 
