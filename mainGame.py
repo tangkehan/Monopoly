@@ -28,7 +28,8 @@ def startInf(app):
     # app.startDownImage = app.loadImage('resource/startDown.png')
     # app.startDownImage = app.scaleImage(app.startDownImage, 0.08).filter(ImageFilter.SMOOTH)
     app.playButtonLocation = [app.width/2 - 50, app.height/2 + 50]
-    app.name = None
+    #app.name cannot be None, cuz we should use this name to creat message of a building
+    app.name = 'player'
 
 
 # Kehan : add the start mode mouse press and add the name part
@@ -399,13 +400,16 @@ def initPlayers(app):
 # 在这里进行买房 被收租的操作，感觉可以写在move a step里面
 # 当走到最后一步的时候， 查看building type, 如果买了地，
 # 则需要把地的下半截涂颜色，在building里已经写好了d rawOwner(self, app, canvas)
-
+# Shes change the arguments
 def gameMode_timerFired(app):
     if app.whosTurn == 'player':
         app.player.moveAStep(app, 'ai')
    
     if app.whosTurn == 'ai':
         app.ai.moveAStep(app, 'player')
+
+        app.player.playerRent()
+        app.ai.aiRent()
 
  
   
@@ -466,6 +470,15 @@ def gameMode_mousePressed(app, event):
             else:
                 app.noticeMessage = f" Computer got {app.rollNumber} !"  
             app.ai.isMove = True
+
+    #Peiwen: click Yes button to buy building
+    if(x >= app.yesLocation[0] - 50 and x <= app.yesLocation[0] + 50 and 
+        y >= app.yesLocation[1] - 25 and y <= app.yesLocation[1] + 25):
+        app.clickyes = True
+        app.player.buyBuiding()
+        app.ai.buyBuiding()
+        update.playSound()
+    app.clickyes = False
 
 
     
