@@ -192,6 +192,7 @@ def gameInf(app):
 
     app.playerTurn = True
     app.isGameOver = False
+    app.clickyes = False
 
 
 
@@ -233,12 +234,14 @@ def drawFinish(app, canvas):
 
   
 def drawYesNo(app, canvas):
-
-    canvas.create_image(app.yesLocation[0],app.yesLocation[1],
+    if app.clickyes == False:
+            
+        canvas.create_image(app.yesLocation[0],app.yesLocation[1],
                          image=ImageTk.PhotoImage(app.yesImage))
     
-    canvas.create_image(app.noLocation[0],app.noLocation[1],
+        canvas.create_image(app.noLocation[0],app.noLocation[1],
                          image=ImageTk.PhotoImage(app.noImage))
+        
     
 def drawExit(app, canvas):
 
@@ -259,6 +262,13 @@ def drawMoney(app, canvas):
     canvas.create_text(app.moneyPlayerLocation[0], app.moneyPlayerLocation[1], 
                        text = app.player.getCurrMoney(), font='Courier 20 bold', fill = '#000000')
 
+    canvas.create_image(app.moneyComLocation[0],app.moneyComLocation[1],
+                         image=ImageTk.PhotoImage(app.moneyComImage))
+    canvas.create_text(app.moneyComLocation[0],app.moneyComLocation[1] - 40, 
+                       text = 'Computer', font='Courier 12 bold', fill = '#e8cffb')
+    #Peiwen draw remain money
+    canvas.create_text(app.moneyPlayerLocation[0], app.moneyPlayerLocation[1], 
+                       text = app.player.getCurrMoney(), font='Courier 20 bold', fill = '#000000')
 
     canvas.create_image(app.moneyComLocation[0],app.moneyComLocation[1],
                          image=ImageTk.PhotoImage(app.moneyComImage))
@@ -268,6 +278,9 @@ def drawMoney(app, canvas):
     canvas.create_text(app.moneyComLocation[0], app.moneyComLocation[1], 
                        text = app.ai.getCurrMoney(), font='Courier 20 bold', fill = '#000000')
     
+    #peiwen draw AI remain money
+    canvas.create_text(app.moneyComLocation[0], app.moneyComLocation[1], 
+                       text = app.ai.getCurrMoney(), font='Courier 20 bold', fill = '#000000')
 
 def drawPrice(app, canvas):
 
@@ -400,7 +413,7 @@ def initPlayers(app):
     app.playerLocation = app.player.currentLocation
     
     app.ai = Player('ai', False, app.map)
-    app.aiLocation = app.ai.currentLocation    
+    app.aiLocation = app.ai.currentLocation  
  
 
 
@@ -458,34 +471,35 @@ def gameMode_mousePressed(app, event):
     # Kehan : if is playe's turn , click the dice to roll
     # Shes add the roll massage in jail
     if ((x - app.rollLocation[0]) ** 2 + (y - app.rollLocation[1]) ** 2) ** 0.5 <= 45:
-        
-        if app.whosTurn == 'player' and app.player.isMove == False :
+        if app.whosTurn == 'player' and app.player.isMove == False:
             app.rollNumber = app.player.rollDice()
             click.playSound()
             if app.player.in_jail == True:
                 app.noticeMessage = "You are not allowed to roll. "
             else:
-                click.playSound()
-            app.noticeMessage = f" You got {app.rollNumber} !"
+                app.noticeMessage = f" You got {app.rollNumber} !"
             app.player.isMove = True
 
       
     # Kehan: after the player click the finish button , it's computer's turn
     if(x >= app.finishButton[0] - 50 and x <= app.finishButton[0] + 50 and 
        y >= app.finishButton[1] - 25 and y <= app.finishButton[1] + 25):
-        if app.whosTurn == 'ai' and  app.ai.isMove == False :
+        if app.whosTurn == 'ai' and  app.ai.isMove == False:
             app.rollNumber = app.ai.rollDice()
             app.noticeMessage = f" Computer got {app.rollNumber} !"  
             app.ai.isMove = True
 
     #Peiwen: click Yes button to buy building
     if(x >= app.yesLocation[0] - 50 and x <= app.yesLocation[0] + 50 and 
-        y >= app.yesLocation[1] - 25 and y <= app.yesLocation[1] + 25):
+        y >= app.yesLocation[1] - 25 and y <= app.yesLocation[1] + 25
+        and app.click):
         app.clickyes = True
-        app.player.buyBuiding()
-        app.ai.buyBuiding()
-        update.playSound()
+        app.player.buyBuiding() if app.whosTurn == 'ai' else app.ai.buyBuiding()
+        update.playSound() 
     app.clickyes = False
+
+   
+   
 
 
     
@@ -535,8 +549,9 @@ def drawBuilding(app,canvas):
 # after adding the player loop the map, need to change this part
 def drawBuildingInfo(app, canvas):  
     if app.click != None:
-        app.click.drawInfo(app, canvas)   
-        drawYesNo(app, canvas)    
+        app.click.drawInfo(app, canvas)
+        if not app.click.isBought:
+            drawYesNo(app, canvas)    
 
 
 # XS : changed the outline and width
@@ -628,7 +643,7 @@ def gameMode_redrawAll(app, canvas):
     drawFinish(app, canvas) #Kehan
     drawChanceRewards(app, canvas)
     drawChancePenalty(app, canvas)  # XS
-    #determine who wins the game
+     #determine who wins the game
     if app.player.getCurrMoney()<0:
         drawLose(app, canvas)
         fail.playSound()
@@ -637,8 +652,10 @@ def gameMode_redrawAll(app, canvas):
         drawWin(app, canvas)
         sucess.playSound()
     # drawWin(app, canvas)    # XS
-    #drawLose(app, canvas)   # XS
+    # drawLose(app, canvas)   # XS
 
+    app.player.playerRent()
+    app.ai.aiRent()
 
 
 

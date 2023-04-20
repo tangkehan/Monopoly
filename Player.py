@@ -98,8 +98,9 @@ class Player:
                 jail, self.startIndex = self.find_jail()
                 self.currentLocation = jail.location
                 #adjest currentIndex when the player is in jail
-                self.index = 7
                 self.in_jail = True
+                self.index = 7
+                
             # print("current turn is: ", app.whosTurn)
             # print("reach here")
             app.whosTurn = next_turn
@@ -142,8 +143,8 @@ class Player:
             self.money -= price
             currBuilding.addOwner(self.name)
             currBuilding.getMessage()
+      
 
-    #Peiwen        
     def playerRent(self):
         if self.index in self.magiclist:
             return
