@@ -259,13 +259,6 @@ def drawMoney(app, canvas):
     canvas.create_text(app.moneyPlayerLocation[0], app.moneyPlayerLocation[1], 
                        text = app.player.getCurrMoney(), font='Courier 20 bold', fill = '#000000')
 
-    canvas.create_image(app.moneyComLocation[0],app.moneyComLocation[1],
-                         image=ImageTk.PhotoImage(app.moneyComImage))
-    canvas.create_text(app.moneyComLocation[0],app.moneyComLocation[1] - 40, 
-                       text = 'Computer', font='Courier 12 bold', fill = '#e8cffb')
-    #Peiwen draw remain money
-    canvas.create_text(app.moneyPlayerLocation[0], app.moneyPlayerLocation[1], 
-                       text = app.player.getCurrMoney(), font='Courier 20 bold', fill = '#000000')
 
     canvas.create_image(app.moneyComLocation[0],app.moneyComLocation[1],
                          image=ImageTk.PhotoImage(app.moneyComImage))
@@ -275,9 +268,6 @@ def drawMoney(app, canvas):
     canvas.create_text(app.moneyComLocation[0], app.moneyComLocation[1], 
                        text = app.ai.getCurrMoney(), font='Courier 20 bold', fill = '#000000')
     
-    #peiwen draw AI remain money
-    canvas.create_text(app.moneyComLocation[0], app.moneyComLocation[1], 
-                       text = app.ai.getCurrMoney(), font='Courier 20 bold', fill = '#000000')
 
 def drawPrice(app, canvas):
 
@@ -468,7 +458,8 @@ def gameMode_mousePressed(app, event):
     # Kehan : if is playe's turn , click the dice to roll
     # Shes add the roll massage in jail
     if ((x - app.rollLocation[0]) ** 2 + (y - app.rollLocation[1]) ** 2) ** 0.5 <= 45:
-        if app.whosTurn == 'player' and app.player.isMove == False:
+        
+        if app.whosTurn == 'player' and app.player.isMove == False :
             app.rollNumber = app.player.rollDice()
             click.playSound()
             if app.player.in_jail == True:
@@ -482,7 +473,7 @@ def gameMode_mousePressed(app, event):
     # Kehan: after the player click the finish button , it's computer's turn
     if(x >= app.finishButton[0] - 50 and x <= app.finishButton[0] + 50 and 
        y >= app.finishButton[1] - 25 and y <= app.finishButton[1] + 25):
-        if app.whosTurn == 'ai' and  app.ai.isMove == False:
+        if app.whosTurn == 'ai' and  app.ai.isMove == False :
             app.rollNumber = app.ai.rollDice()
             app.noticeMessage = f" Computer got {app.rollNumber} !"  
             app.ai.isMove = True
@@ -637,11 +628,17 @@ def gameMode_redrawAll(app, canvas):
     drawFinish(app, canvas) #Kehan
     drawChanceRewards(app, canvas)
     drawChancePenalty(app, canvas)  # XS
-    # drawWin(app, canvas)    # XS
-    # drawLose(app, canvas)   # XS
+    #determine who wins the game
+    if app.player.getCurrMoney()<0:
+        drawLose(app, canvas)
+        fail.playSound()
 
-    app.player.playerRent()
-    app.ai.aiRent()
+    if app.ai.getCurrMoney()<0:
+        drawWin(app, canvas)
+        sucess.playSound()
+    # drawWin(app, canvas)    # XS
+    #drawLose(app, canvas)   # XS
+
 
 
 

@@ -3,6 +3,8 @@ from event import ChanceEvent
 from event import TaxEvent
 import random
 
+import Sound
+
 
 
 class Player:
@@ -42,6 +44,10 @@ class Player:
         self.endIndex = (self.startIndex + self.rollNum) % 28
         
         #pw
+        self.index += self.rollNum
+        #
+        if self.in_jail == True:
+            self.index -= self.rollNum
         if self.index>27:
             self.index = self.index-27-1
             self.round +=1
@@ -81,13 +87,18 @@ class Player:
             b = app.map[self.endIndex]
             if type(b).__name__ == 'Chance':
                 self.chance_event()
+                #play sound
+                Sound.surprise.playSound()
                 print(self.money)
             if type(b).__name__ == 'MagicTax':
                 self.tax_event()
+                Sound.surprise.playSound()
                 print(self.money)
             elif hasattr(b, 'name') and b.name == 'go to jail':
                 jail, self.startIndex = self.find_jail()
                 self.currentLocation = jail.location
+                #adjest currentIndex when the player is in jail
+                self.index = 7
                 self.in_jail = True
             # print("current turn is: ", app.whosTurn)
             # print("reach here")
@@ -109,7 +120,8 @@ class Player:
         self.money += random.choice(list(TaxEvent)).value
         
 
-
+    def getIndex(self):
+        return self.index
 
     
     #Peiwen: buy buildings
@@ -122,9 +134,12 @@ class Player:
         if self.index in self.magiclist:
             return
         currBuilding = self.map[self.index]
+        price = currBuilding.price
+        if self.getCurrMoney() < price:
+            return
         if currBuilding.isBought == False:
             self.buildings.append(currBuilding)
-            self.money -= currBuilding.price
+            self.money -= price
             currBuilding.addOwner(self.name)
             currBuilding.getMessage()
 

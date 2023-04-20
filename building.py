@@ -13,6 +13,7 @@ class Building():
         self.owner = None
         self.rentfee = rent
         self.isBought = False
+        self.isRent = False
 
         
     def getMessage(self):
@@ -20,6 +21,15 @@ class Building():
             return 'Don not have owner yet!'
         else:
             return self.owner
+
+    def addOwner(self,ownerName):
+        self.owner = ownerName
+        self.isBought = True
+        return self.isBought
+
+    #reset isRent status
+    def reset(self):
+        self.isRent = False
 
 
     def getColorLocation(self, app):
