@@ -420,8 +420,7 @@ def initPlayers(app):
 
 #  timerFired 里是每0.5秒重画一切所有
 # 在这里进行买房 被收租的操作，感觉可以写在move a step里面
-# 当走到最后一步的时候， 查看building type, 如果买了地，
-# 则需要把地的下半截涂颜色，在building里已经写好了d rawOwner(self, app, canvas)
+
 # Shes change the arguments
 def gameMode_timerFired(app):
     if app.whosTurn == 'player':
@@ -498,10 +497,6 @@ def gameMode_mousePressed(app, event):
         update.playSound() 
     app.clickyes = False
 
-   
-   
-
-
     
     x1 = app.exitLocation[0] - 65
     x2 = app.exitLocation[0] + 65
@@ -540,8 +535,12 @@ def drawBuilding(app,canvas):
             b.drawTax(canvas)
         elif type(b).__name__ == 'Building':
             b.drawColorAndName(app, canvas)
+            if b.owner != None:
+                b.drawOwner(app, canvas)
         else: 
             continue
+   
+        
 
 
 #Kehan : edit the drawing building info when click the building,
@@ -551,7 +550,11 @@ def drawBuildingInfo(app, canvas):
     if app.click != None:
         app.click.drawInfo(app, canvas)
         if not app.click.isBought:
-            drawYesNo(app, canvas)    
+            drawYesNo(app, canvas)
+
+
+
+
 
 
 # XS : changed the outline and width
@@ -643,6 +646,7 @@ def gameMode_redrawAll(app, canvas):
     drawFinish(app, canvas) #Kehan
     drawChanceRewards(app, canvas)
     drawChancePenalty(app, canvas)  # XS
+    
      #determine who wins the game
     if app.player.getCurrMoney()<0:
         drawLose(app, canvas)

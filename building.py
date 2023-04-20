@@ -128,9 +128,10 @@ class Building():
         if self.owner == 'player':
             canvas.create_rectangle(x1, y1, x2, y2,
                                 fill = 'snow' , outline='black', width = '1')
-        if self.owner == 'AI':
+        if self.owner == 'ai':
             canvas.create_rectangle(x1, y1, x2, y2,
                                 fill = 'black' , outline='black', width = '1')
+            
     # XS changed the coordinate        
     def drawInfo(self, app, canvas):
         x1 = app.boardSize + 30

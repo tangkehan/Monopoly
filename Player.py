@@ -143,6 +143,7 @@ class Player:
             self.money -= price
             currBuilding.addOwner(self.name)
             currBuilding.getMessage()
+            
       
 
     def playerRent(self):
