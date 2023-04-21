@@ -20,6 +20,8 @@ class Building():
         if self.owner == None:
             return 'Don not have owner yet!'
         else:
+            if self.owner == 'ai':
+                return "Player 2"
             return self.owner
 
     def addOwner(self,ownerName):

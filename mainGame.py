@@ -321,7 +321,7 @@ def drawMoney(app, canvas):
     canvas.create_image(app.moneyComLocation[0],app.moneyComLocation[1],
                          image=ImageTk.PhotoImage(app.moneyComImage))
     canvas.create_text(app.moneyComLocation[0],app.moneyComLocation[1] - 40, 
-                       text = 'Computer', font='Courier 12 bold', fill = '#e8cffb')
+                       text = 'Player 2', font='Courier 12 bold', fill = '#e8cffb')
     #Peiwen draw remain money
     canvas.create_text(app.moneyPlayerLocation[0], app.moneyPlayerLocation[1], 
                        text = app.player.getCurrMoney(), font='Courier 20 bold', fill = '#000000')
@@ -329,7 +329,7 @@ def drawMoney(app, canvas):
     canvas.create_image(app.moneyComLocation[0],app.moneyComLocation[1],
                          image=ImageTk.PhotoImage(app.moneyComImage))
     canvas.create_text(app.moneyComLocation[0],app.moneyComLocation[1] - 40, 
-                       text = 'Computer', font='Courier 12 bold', fill = '#e8cffb')
+                       text = 'Player 2', font='Courier 12 bold', fill = '#e8cffb')
     #peiwen draw AI remain money
     canvas.create_text(app.moneyComLocation[0], app.moneyComLocation[1], 
                        text = app.ai.getCurrMoney(), font='Courier 20 bold', fill = '#000000')
@@ -541,7 +541,7 @@ def gameMode_mousePressed(app, event):
        y >= app.finishButton[1] - 25 and y <= app.finishButton[1] + 25):
         if app.whosTurn == 'ai' and  app.ai.isMove == False:
             app.rollNumber = app.ai.rollDice()
-            app.noticeMessage = f" Computer got {app.rollNumber} !"  
+            app.noticeMessage = f" Player2 got {app.rollNumber} !"  
             app.ai.isMove = True
 
     #Peiwen: click Yes button to buy building

@@ -8,7 +8,7 @@ import Sound
 
 
 class Player:
-    flag = True
+    # flag = True
     def __init__(self, name, player, map):
 
         self.name = name
@@ -42,11 +42,11 @@ class Player:
     def rollDice(self):
         # Shes add go_to_jail function
         # test version
-        if Player.flag:
-            Player.flag = False
-            self.rollNum = 21 #"go_to_jail" is in 21st cell, roll number for 21 just for test
-        else:
-            self.rollNum =  random.randint(1, 6)
+        # if Player.flag:
+        #     Player.flag = False
+        #     self.rollNum = 21 #"go_to_jail" is in 21st cell, roll number for 21 just for test
+        # else:
+        self.rollNum =  random.randint(1, 6)
         self.endIndex = (self.startIndex + self.rollNum) % 28
         
         #pw:locate the current index of the player
@@ -54,15 +54,15 @@ class Player:
         # adjust index
         if self.in_jail == True:
             self.index -= self.rollNum
-        if self.index>27:
-            self.index = self.index-27-1
-            self.round +=1
-            #helper function reset isRent status each turn
-            for i in range(len(self.map)):
-                building = self.map[i]
-                if i in self.magiclist:
-                    continue
-                building.reset()
+        # if self.index>27:
+        #     self.index = self.index-27-1
+        #     self.round +=1
+        #helper function reset isRent status each turn
+        for i in range(len(self.map)):
+            building = self.map[i]
+            if i in self.magiclist:
+                continue
+            building.reset()
         #automatically push building info
         #currBuilding = self.map[self.index]
         #currBuilding.drawInfo(app)
