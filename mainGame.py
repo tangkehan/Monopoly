@@ -202,25 +202,72 @@ def gameInf(app):
 def drawChanceRewards(app, canvas):
     
     # Shes add the if loop
+    # XS add value 
     
     if app.player.chance_rewards == True or app.ai.chance_rewards == True:
-
+        chance_value = 0
+        if app.player.chance_value == 0:
+            chance_value = app.ai.chance_value
+        else:
+            chance_value = app.player.chance_value
         canvas.create_image(app.chanceRewardsLocation[0], app.chanceRewardsLocation[1],
                         image=ImageTk.PhotoImage(app.chanceRewardsImage))
     
         canvas.create_text(app.chanceRewardsLocation[0] + 10, app.chanceRewardsLocation[1] - 45, 
                        text = 'Rewards', font='Courier 16 bold', fill = '#3838FC')
+        
+        canvas.create_text(app.chanceRewardsLocation[0] + 10, app.chanceRewardsLocation[1] - 20, 
+                       text = chance_value, font='Courier 16 bold', fill = '#3838FC')
+        
+    app.player.chance_rewards = False
+    app.ai.chance_rewards = False
+    app.ai.chance_value = 0
+    app.player.chance_value = 0
 
 
 def drawChancePenalty(app, canvas):
     
     if app.player.chance_panelty == True or app.ai.chance_panelty == True:
+        chance_value = 0
+        if app.player.chance_value == 0:
+            chance_value = app.ai.chance_value
+        else:
+            chance_value = app.player.chance_value
+            
+        canvas.create_image(app.chancePenaltyLocation[0], app.chancePenaltyLocation[1],
+                        image=ImageTk.PhotoImage(app.chancePenaltyImage))
+    
+        canvas.create_text(app.chancePenaltyLocation[0] - 10, app.chancePenaltyLocation[1] - 63, 
+                        text = 'Fine', font='Courier 17 bold', fill = '#FF7F00')  
+        
+        canvas.create_text(app.chancePenaltyLocation[0] - 10, app.chancePenaltyLocation[1] - 10, 
+                        text = chance_value, font='Courier 17 bold', fill = '#FF7F00')  
+    
+    app.player.chance_panelty = False
+    app.ai.chance_panelty = False
+    app.ai.chance_value = 0
+    app.player.chance_value = 0
+
+    if app.player.taxdraw == True or app.ai.taxdraw == True:
+        tax_value = 0
+        if app.player.tax_value == 0:
+            tax_value = app.ai.tax_value
+        else:
+            tax_value = app.player.tax_value
 
         canvas.create_image(app.chancePenaltyLocation[0], app.chancePenaltyLocation[1],
                         image=ImageTk.PhotoImage(app.chancePenaltyImage))
     
         canvas.create_text(app.chancePenaltyLocation[0] - 10, app.chancePenaltyLocation[1] - 63, 
-                       text = 'Fine', font='Courier 17 bold', fill = '#FF7F00')   
+                        text = 'Fine', font='Courier 17 bold', fill = '#FF7F00')  
+        
+        canvas.create_text(app.chancePenaltyLocation[0] - 10, app.chancePenaltyLocation[1] - 13, 
+                        text = tax_value, font='Courier 17 bold', fill = '#FF7F00')  
+    
+    app.player.taxdraw = False
+    app.ai.taxdraw = False
+    app.player.tax_value = 0
+    app.ai.tax_value = 0
 
 
   

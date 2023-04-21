@@ -30,6 +30,9 @@ class Player:
         self.in_jail = False
         self.chance_rewards = False
         self.chance_panelty = False
+        self.chance_value = 0
+        self.tax_value = 0
+        self.taxdraw = False
 
         
         #magic list means additional bonus
@@ -118,16 +121,19 @@ class Player:
     # XS add chance function
     # Shes change the Magic Tax and Chance to Enum
     def chance_event(self):
-        if random.choice(list(ChanceEvent)).value < 0:
+        self.chance_value = random.choice(list(ChanceEvent)).value
+        if self.chance_value < 0:
             self.chance_panelty = True
         else:
             self.chance_rewards = True
-        self.money += random.choice(list(ChanceEvent)).value
+        self.money += self.chance_value
 
         
 
     def tax_event(self):
-        self.money += random.choice(list(TaxEvent)).value
+        self.tax_value = random.choice(list(TaxEvent)).value
+        self.money += self.tax_value
+        self.taxdraw = True
         
 
     def getIndex(self):
