@@ -28,6 +28,9 @@ class Player:
         self.endIndex = -1
        
         self.in_jail = False
+        self.chance_rewards = False
+        self.chance_panelty = False
+
         
         #magic list means additional bonus
         self.magiclist=[0,4,5,6,7,10,12,14,18,20,21,22,23,25]
@@ -87,13 +90,12 @@ class Player:
             b = app.map[self.endIndex]
             if type(b).__name__ == 'Chance':
                 self.chance_event()
-                #play sound
                 Sound.surprise.playSound()
-                print(self.money)
+
             if type(b).__name__ == 'MagicTax':
                 self.tax_event()
                 Sound.surprise.playSound()
-                print(self.money)
+        
             elif hasattr(b, 'name') and b.name == 'go to jail':
                 jail, self.startIndex = self.find_jail()
                 self.currentLocation = jail.location
@@ -116,7 +118,14 @@ class Player:
     # XS add chance function
     # Shes change the Magic Tax and Chance to Enum
     def chance_event(self):
+        if random.choice(list(ChanceEvent)).value < 0:
+            self.chance_panelty = True
+        else:
+            self.chance_rewards = True
         self.money += random.choice(list(ChanceEvent)).value
+
+        
+
     def tax_event(self):
         self.money += random.choice(list(TaxEvent)).value
         

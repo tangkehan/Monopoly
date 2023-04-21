@@ -7,6 +7,8 @@ import random
 from Player import*
 import time
 from Sound import*
+from event import ChanceEvent
+from event import TaxEvent
 
 
 import pygame
@@ -195,22 +197,29 @@ def gameInf(app):
     app.clickyes = False
 
 
+# xs
 
 def drawChanceRewards(app, canvas):
+    
+    # Shes add the if loop
+    
+    if app.player.chance_rewards == True or app.ai.chance_rewards == True:
 
-    canvas.create_image(app.chanceRewardsLocation[0], app.chanceRewardsLocation[1],
+        canvas.create_image(app.chanceRewardsLocation[0], app.chanceRewardsLocation[1],
                         image=ImageTk.PhotoImage(app.chanceRewardsImage))
     
-    canvas.create_text(app.chanceRewardsLocation[0] + 10, app.chanceRewardsLocation[1] - 45, 
+        canvas.create_text(app.chanceRewardsLocation[0] + 10, app.chanceRewardsLocation[1] - 45, 
                        text = 'Rewards', font='Courier 16 bold', fill = '#3838FC')
 
 
 def drawChancePenalty(app, canvas):
+    
+    if app.player.chance_panelty == True or app.ai.chance_panelty == True:
 
-    canvas.create_image(app.chancePenaltyLocation[0], app.chancePenaltyLocation[1],
+        canvas.create_image(app.chancePenaltyLocation[0], app.chancePenaltyLocation[1],
                         image=ImageTk.PhotoImage(app.chancePenaltyImage))
     
-    canvas.create_text(app.chancePenaltyLocation[0] - 10, app.chancePenaltyLocation[1] - 63, 
+        canvas.create_text(app.chancePenaltyLocation[0] - 10, app.chancePenaltyLocation[1] - 63, 
                        text = 'Fine', font='Courier 17 bold', fill = '#FF7F00')   
 
 
@@ -646,13 +655,15 @@ def gameMode_redrawAll(app, canvas):
     drawFinish(app, canvas) #Kehan
     drawChanceRewards(app, canvas)
     drawChancePenalty(app, canvas)  # XS
-    
+
+ 
+
      #determine who wins the game
     if app.player.getCurrMoney()<0:
         drawLose(app, canvas)
         fail.playSound()
 
-    if app.ai.getCurrMoney()<0:
+    if app.player.getCurrMoney()<0:
         drawWin(app, canvas)
         sucess.playSound()
     # drawWin(app, canvas)    # XS
