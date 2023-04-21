@@ -127,10 +127,10 @@ class Building():
         x1, y1, x2, y2 = self.getOwnerLocation(app)
         if self.owner == 'player':
             canvas.create_rectangle(x1, y1, x2, y2,
-                                fill = 'snow' , outline='black', width = '1')
+                                fill = '#53CD98' , outline='black', width = '1')
         if self.owner == 'ai':
             canvas.create_rectangle(x1, y1, x2, y2,
-                                fill = 'black' , outline='black', width = '1')
+                                fill = '#B988FD' , outline='black', width = '1')
             
     # XS changed the coordinate        
     def drawInfo(self, app, canvas):
