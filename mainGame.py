@@ -608,6 +608,25 @@ def drawBuildingInfo(app, canvas):
         if not app.click.isBought:
             drawYesNo(app, canvas)
 
+#automatically push buiding infomation
+def drawBuildingInfoAutoPlayer(app, canvas):  
+    #display player's current building
+    if app.whosTurn == 'ai' :
+        currIndex = app.player.getIndex()
+        if currIndex in app.player.magiclist:
+            return
+        currBuilding = app.player.map[currIndex]
+        currBuilding.drawInfo(app, canvas)
+        drawYesNo(app, canvas)
+    #display ai's current building
+    else:
+        currIndex = app.ai.getIndex()
+        if currIndex in app.player.magiclist:
+            return
+        currBuilding = app.ai.map[currIndex]
+        currBuilding.drawInfo(app, canvas)
+        drawYesNo(app, canvas)
+
 
 
 
@@ -694,6 +713,9 @@ def gameMode_redrawAll(app, canvas):
     drawRoll(app, canvas)   # XS
     drawBuilding(app, canvas)
     drawBuildingInfo(app, canvas)
+    #auto draw player info
+    drawBuildingInfoAutoPlayer(app, canvas)
+    #drawBuildingInfoAutoAI(app, canvas)
     drawMoney(app, canvas)  # XS
     drawPrice(app, canvas)  # XS
     drawExit(app, canvas)   # XS
@@ -708,11 +730,12 @@ def gameMode_redrawAll(app, canvas):
      #determine who wins the game
     if app.player.getCurrMoney()<0:
         drawLose(app, canvas)
-        fail.playSound()
+        fail.playSound(1)
 
-    if app.player.getCurrMoney()<0:
+    if app.ai.getCurrMoney()<0:
         drawWin(app, canvas)
-        sucess.playSound()
+        sucess.playSound(1)
+        
     # drawWin(app, canvas)    # XS
     # drawLose(app, canvas)   # XS
 

@@ -49,9 +49,9 @@ class Player:
             self.rollNum =  random.randint(1, 6)
         self.endIndex = (self.startIndex + self.rollNum) % 28
         
-        #pw
+        #pw:locate the current index of the player
         self.index += self.rollNum
-        #
+        # adjust index
         if self.in_jail == True:
             self.index -= self.rollNum
         if self.index>27:
@@ -63,6 +63,9 @@ class Player:
                 if i in self.magiclist:
                     continue
                 building.reset()
+        #automatically push building info
+        #currBuilding = self.map[self.index]
+        #currBuilding.drawInfo(app)
         return self.rollNum
     
     
@@ -151,6 +154,7 @@ class Player:
             return
         currBuilding = self.map[self.index]
         price = currBuilding.price
+        #lacking money
         if self.getCurrMoney() < price:
             return
         if currBuilding.isBought == False:
