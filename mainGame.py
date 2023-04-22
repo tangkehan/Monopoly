@@ -730,11 +730,13 @@ def gameMode_redrawAll(app, canvas):
      #determine who wins the game
     if app.player.getCurrMoney()<0:
         drawLose(app, canvas)
-        fail.playSound(1)
+        fail.playSound()
+        pygame.mixer.music.stop()
 
     if app.ai.getCurrMoney()<0:
         drawWin(app, canvas)
-        sucess.playSound(1)
+        sucess.playSound()
+        pygame.mixer.music.stop()
         
     # drawWin(app, canvas)    # XS
     # drawLose(app, canvas)   # XS

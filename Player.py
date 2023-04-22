@@ -54,18 +54,15 @@ class Player:
         # adjust index
         if self.in_jail == True:
             self.index -= self.rollNum
-        # if self.index>27:
-        #     self.index = self.index-27-1
-        #     self.round +=1
+        if self.index>27:
+           self.index = self.index-27-1
+           self.round +=1
         #helper function reset isRent status each turn
         for i in range(len(self.map)):
             building = self.map[i]
             if i in self.magiclist:
                 continue
             building.reset()
-        #automatically push building info
-        #currBuilding = self.map[self.index]
-        #currBuilding.drawInfo(app)
         return self.rollNum
     
     
