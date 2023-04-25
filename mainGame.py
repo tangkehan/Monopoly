@@ -7,6 +7,8 @@ import random
 from Player import*
 import time
 from Sound import*
+from event import ChanceEvent
+from event import TaxEvent
 
 
 import pygame
@@ -28,7 +30,8 @@ def startInf(app):
     # app.startDownImage = app.loadImage('resource/startDown.png')
     # app.startDownImage = app.scaleImage(app.startDownImage, 0.08).filter(ImageFilter.SMOOTH)
     app.playButtonLocation = [app.width/2 - 50, app.height/2 + 50]
-    app.name = None
+    #app.name cannot be None, cuz we should use this name to creat message of a building
+    app.name = 'player'
 
 
 # Kehan : add the start mode mouse press and add the name part
@@ -114,12 +117,14 @@ def gameInf(app):
 
     # XS: draw screen needs 3 steps : load, draw, call
     # 1st: load Roll, yes, no button
-    app.rollLocation = (app.cornerSize + 5 * app.gridHeight, app.boardSize - app.cornerSize - app.gridHeight + 20)
+    app.rollLocation = (app.cornerSize + 4.5 * app.gridHeight, app.boardSize - app.cornerSize - app.gridHeight + 20)
     app.rollImage = app.loadImage('resource/Roll.png')
-    app.rollImage = app.scaleImage(app.rollImage, 0.02).filter(ImageFilter.SMOOTH)
+    app.rollImage = app.scaleImage(app.rollImage, 0.027).filter(ImageFilter.SMOOTH)
 
     # Kehan: add round finish button
-    app.finishButton = (app.rollLocation[0],  app.rollLocation[1] - 70)
+    app.finishButton = (app.rollLocation[0] + 95,  app.rollLocation[1] + 7)
+    app.finishImage = app.loadImage('resource/finish.png')
+    app.finishImage = app.scaleImage(app.finishImage, 0.02).filter(ImageFilter.SMOOTH)
     
     # Shes load Player image
     app.playerImage = app.loadImage('resource/player.png')
@@ -171,15 +176,98 @@ def gameInf(app):
     app.exitImage = app.loadImage('resource/exit.png')
     app.exitImage = app.scaleImage(app.exitImage, 0.2).filter(ImageFilter.SMOOTH)
 
-   
+    app.chanceRewardsLocation = (app.cornerSize + 3 * app.gridHeight, app.cornerSize + 2.6 * app.gridHeight)
+    app.chanceRewardsImage = app.loadImage('resource/chance_Rewards.png')
+    app.chanceRewardsImage = app.scaleImage(app.chanceRewardsImage, 0.2)
+    app.chancePenaltyLocation = (app.cornerSize + 3 * app.gridHeight, app.cornerSize + 2.7 * app.gridHeight)
+    app.chancePenaltyImage = app.loadImage('resource/chance_Penalty.png')
+    app.chancePenaltyImage = app.scaleImage(app.chancePenaltyImage, 0.2)
 
-    # x, y = app.width/2 - 50, app.height/2 + 50
-    # app.startButtonRect = pygame.Rect(x, y, app.startUpImage.width, app.startUpImage.height)
-    # app.startButtonClicked = False
+    app.winLocation = (app.width / 2, app.height / 2)
+    app.winImage = app.loadImage('resource/win.png')
+    app.winImage = app.scaleImage(app.winImage, 0.38)
+
+    app.loseLocation = (app.width / 2, app.height / 2)
+    app.loseImage = app.loadImage('resource/lose.png')
+    app.loseImage = app.scaleImage(app.loseImage, 0.23)
 
 
     app.playerTurn = True
     app.isGameOver = False
+    app.clickyes = False
+
+
+# xs
+
+def drawChanceRewards(app, canvas):
+    
+    # Shes add the if loop
+    # XS add value 
+    
+    if app.player.chance_rewards == True or app.ai.chance_rewards == True:
+        chance_value = 0
+        if app.player.chance_value == 0:
+            chance_value = app.ai.chance_value
+        else:
+            chance_value = app.player.chance_value
+        canvas.create_image(app.chanceRewardsLocation[0], app.chanceRewardsLocation[1],
+                        image=ImageTk.PhotoImage(app.chanceRewardsImage))
+    
+        canvas.create_text(app.chanceRewardsLocation[0] + 10, app.chanceRewardsLocation[1] - 45, 
+                       text = 'Rewards', font='Courier 16 bold', fill = '#3838FC')
+        
+        canvas.create_text(app.chanceRewardsLocation[0] + 10, app.chanceRewardsLocation[1] - 20, 
+                       text = chance_value, font='Courier 16 bold', fill = '#3838FC')
+        
+    app.player.chance_rewards = False
+    app.ai.chance_rewards = False
+    app.ai.chance_value = 0
+    app.player.chance_value = 0
+
+
+def drawChancePenalty(app, canvas):
+    
+    if app.player.chance_panelty == True or app.ai.chance_panelty == True:
+        chance_value = 0
+        if app.player.chance_value == 0:
+            chance_value = app.ai.chance_value
+        else:
+            chance_value = app.player.chance_value
+            
+        canvas.create_image(app.chancePenaltyLocation[0], app.chancePenaltyLocation[1],
+                        image=ImageTk.PhotoImage(app.chancePenaltyImage))
+    
+        canvas.create_text(app.chancePenaltyLocation[0] - 10, app.chancePenaltyLocation[1] - 63, 
+                        text = 'Fine', font='Courier 17 bold', fill = '#FF7F00')  
+        
+        canvas.create_text(app.chancePenaltyLocation[0] - 10, app.chancePenaltyLocation[1] - 10, 
+                        text = chance_value, font='Courier 17 bold', fill = '#FF7F00')  
+    
+    app.player.chance_panelty = False
+    app.ai.chance_panelty = False
+    app.ai.chance_value = 0
+    app.player.chance_value = 0
+
+    if app.player.taxdraw == True or app.ai.taxdraw == True:
+        tax_value = 0
+        if app.player.tax_value == 0:
+            tax_value = app.ai.tax_value
+        else:
+            tax_value = app.player.tax_value
+
+        canvas.create_image(app.chancePenaltyLocation[0], app.chancePenaltyLocation[1],
+                        image=ImageTk.PhotoImage(app.chancePenaltyImage))
+    
+        canvas.create_text(app.chancePenaltyLocation[0] - 10, app.chancePenaltyLocation[1] - 63, 
+                        text = 'Fine', font='Courier 17 bold', fill = '#FF7F00')  
+        
+        canvas.create_text(app.chancePenaltyLocation[0] - 10, app.chancePenaltyLocation[1] - 13, 
+                        text = tax_value, font='Courier 17 bold', fill = '#FF7F00')  
+    
+    app.player.taxdraw = False
+    app.ai.taxdraw = False
+    app.player.tax_value = 0
+    app.ai.tax_value = 0
 
 
   
@@ -190,22 +278,26 @@ def drawRoll(app, canvas):
                          image=ImageTk.PhotoImage(app.rollImage))
     
 def drawFinish(app, canvas):
-    canvas.create_rectangle(app.finishButton[0] - 50, app.finishButton[1] - 25,
-                            app.finishButton[0] + 50, app.finishButton[1] + 25,
-                         outline = 'black')
-    canvas.create_text(app.finishButton[0], app.finishButton[1], text = 'Finish!',
-                       fill='#1459ff', font='Courier 20 bold')
-                     
+    # canvas.create_rectangle(app.finishButton[0] - 50, app.finishButton[1] - 25,
+    #                         app.finishButton[0] + 50, app.finishButton[1] + 25,
+    #                      outline = 'black')
     
+    # canvas.create_text(app.finishButton[0], app.finishButton[1], text = 'Finish!',
+    #                    fill='#1459ff', font='Courier 20 bold')
+                     
+    canvas.create_image(app.finishButton[0],app.finishButton[1],
+                         image=ImageTk.PhotoImage(app.finishImage))
 
   
 def drawYesNo(app, canvas):
-
-    canvas.create_image(app.yesLocation[0],app.yesLocation[1],
+    if app.clickyes == False:
+            
+        canvas.create_image(app.yesLocation[0],app.yesLocation[1],
                          image=ImageTk.PhotoImage(app.yesImage))
     
-    canvas.create_image(app.noLocation[0],app.noLocation[1],
+        canvas.create_image(app.noLocation[0],app.noLocation[1],
                          image=ImageTk.PhotoImage(app.noImage))
+        
     
 def drawExit(app, canvas):
 
@@ -229,7 +321,19 @@ def drawMoney(app, canvas):
     canvas.create_image(app.moneyComLocation[0],app.moneyComLocation[1],
                          image=ImageTk.PhotoImage(app.moneyComImage))
     canvas.create_text(app.moneyComLocation[0],app.moneyComLocation[1] - 40, 
-                       text = 'Computer', font='Courier 12 bold', fill = '#e8cffb')
+                       text = 'Player 2', font='Courier 12 bold', fill = '#e8cffb')
+    #Peiwen draw remain money
+    canvas.create_text(app.moneyPlayerLocation[0], app.moneyPlayerLocation[1], 
+                       text = app.player.getCurrMoney(), font='Courier 20 bold', fill = '#000000')
+
+    canvas.create_image(app.moneyComLocation[0],app.moneyComLocation[1],
+                         image=ImageTk.PhotoImage(app.moneyComImage))
+    canvas.create_text(app.moneyComLocation[0],app.moneyComLocation[1] - 40, 
+                       text = 'Player 2', font='Courier 12 bold', fill = '#e8cffb')
+    #peiwen draw AI remain money
+    canvas.create_text(app.moneyComLocation[0], app.moneyComLocation[1], 
+                       text = app.ai.getCurrMoney(), font='Courier 20 bold', fill = '#000000')
+    
     #peiwen draw AI remain money
     canvas.create_text(app.moneyComLocation[0], app.moneyComLocation[1], 
                        text = app.ai.getCurrMoney(), font='Courier 20 bold', fill = '#000000')
@@ -238,6 +342,8 @@ def drawPrice(app, canvas):
 
     canvas.create_image(app.priceLocation[0],app.priceLocation[1],
                          image=ImageTk.PhotoImage(app.priceImage))
+    
+
 
 # XS draw background
 def drawBackground(app, canvas):
@@ -245,6 +351,15 @@ def drawBackground(app, canvas):
     backgroundPhoto = ImageTk.PhotoImage(backgroundImage)
     canvas.create_image(0, 0, anchor="nw", image=backgroundPhoto)
     canvas.lower("all")
+
+def drawWin(app, canvas):
+    canvas.create_image(app.winLocation[0],app.winLocation[1],
+                         image=ImageTk.PhotoImage(app.winImage))
+    
+def drawLose(app, canvas):
+    canvas.create_image(app.loseLocation[0],app.loseLocation[1],
+                         image=ImageTk.PhotoImage(app.loseImage))
+    
 
 
 def getAllLocation(app):
@@ -354,22 +469,24 @@ def initPlayers(app):
     app.playerLocation = app.player.currentLocation
     
     app.ai = Player('ai', False, app.map)
-    app.aiLocation = app.ai.currentLocation    
+    app.aiLocation = app.ai.currentLocation  
  
 
 
 
-#  timerFired 里是枚0.5秒重画一切所有
+#  timerFired 里是每0.5秒重画一切所有
 # 在这里进行买房 被收租的操作，感觉可以写在move a step里面
-# 当走到最后一步的时候， 查看building type, 如果买了地，
-# 则需要把地的下半截涂颜色，在building里已经写好了d rawOwner(self, app, canvas)
 
+# Shes change the arguments
 def gameMode_timerFired(app):
     if app.whosTurn == 'player':
-        app.player.player_moveAStep(app)
+        app.player.moveAStep(app, 'ai')
    
     if app.whosTurn == 'ai':
-        app.ai.ai_moveAStep(app)
+        app.ai.moveAStep(app, 'player')
+
+    app.player.playerRent()
+    app.ai.aiRent()
 
  
   
@@ -407,23 +524,34 @@ def gameMode_mousePressed(app, event):
 
     # XS changed : click the "Roll" to roll the dice
     # Kehan : if is playe's turn , click the dice to roll
+    # Shes add the roll massage in jail
     if ((x - app.rollLocation[0]) ** 2 + (y - app.rollLocation[1]) ** 2) ** 0.5 <= 45:
         if app.whosTurn == 'player' and app.player.isMove == False:
             app.rollNumber = app.player.rollDice()
             click.playSound()
-            app.noticeMessage = f" You got {app.rollNumber} !"
+            if app.player.in_jail == True:
+                app.noticeMessage = "You are not allowed to roll. "
+            else:
+                app.noticeMessage = f" You got {app.rollNumber} !"
             app.player.isMove = True
 
       
-    # Kehan: afrer the player click the finish button , it's computer's turn
+    # Kehan: after the player click the finish button , it's computer's turn
     if(x >= app.finishButton[0] - 50 and x <= app.finishButton[0] + 50 and 
        y >= app.finishButton[1] - 25 and y <= app.finishButton[1] + 25):
         if app.whosTurn == 'ai' and  app.ai.isMove == False:
             app.rollNumber = app.ai.rollDice()
-            click.playSound()
-            app.noticeMessage = f" Computer got {app.rollNumber} !"  
+            app.noticeMessage = f" Player2 got {app.rollNumber} !"  
             app.ai.isMove = True
 
+    #Peiwen: click Yes button to buy building
+    if(x >= app.yesLocation[0] - 50 and x <= app.yesLocation[0] + 50 and 
+        y >= app.yesLocation[1] - 25 and y <= app.yesLocation[1] + 25
+        and app.click):
+        app.clickyes = True
+        app.player.buyBuiding() if app.whosTurn == 'ai' else app.ai.buyBuiding()
+        update.playSound() 
+    app.clickyes = False
 
     
     x1 = app.exitLocation[0] - 65
@@ -433,6 +561,11 @@ def gameMode_mousePressed(app, event):
     if x >= x1 and x <= x2 and y >= y1 and y <= y2:
         app.mode = 'startMode'
      
+# XS : When the game is over, press "P" to go back to the cover and start the next round
+def gameMode_keyPressed(app, event):
+    if (event.key == 'r'):
+        app.mode = 'startMode'
+
 
 # Kehan: add the notice message
 def drawDice(app, canvas):
@@ -458,8 +591,12 @@ def drawBuilding(app,canvas):
             b.drawTax(canvas)
         elif type(b).__name__ == 'Building':
             b.drawColorAndName(app, canvas)
+            if b.owner != None:
+                b.drawOwner(app, canvas)
         else: 
             continue
+   
+        
 
 
 #Kehan : edit the drawing building info when click the building,
@@ -467,8 +604,32 @@ def drawBuilding(app,canvas):
 # after adding the player loop the map, need to change this part
 def drawBuildingInfo(app, canvas):  
     if app.click != None:
-        app.click.drawInfo(app, canvas)   
-        drawYesNo(app, canvas)    
+        app.click.drawInfo(app, canvas)
+        if not app.click.isBought:
+            drawYesNo(app, canvas)
+
+#automatically push buiding infomation
+def drawBuildingInfoAutoPlayer(app, canvas):  
+    #display player's current building
+    if app.whosTurn == 'ai' :
+        currIndex = app.player.getIndex()
+        if currIndex in app.player.magiclist:
+            return
+        currBuilding = app.player.map[currIndex]
+        currBuilding.drawInfo(app, canvas)
+        drawYesNo(app, canvas)
+    #display ai's current building
+    else:
+        currIndex = app.ai.getIndex()
+        if currIndex in app.player.magiclist:
+            return
+        currBuilding = app.ai.map[currIndex]
+        currBuilding.drawInfo(app, canvas)
+        drawYesNo(app, canvas)
+
+
+
+
 
 
 # XS : changed the outline and width
@@ -552,16 +713,41 @@ def gameMode_redrawAll(app, canvas):
     drawRoll(app, canvas)   # XS
     drawBuilding(app, canvas)
     drawBuildingInfo(app, canvas)
+    #auto draw player info
+    drawBuildingInfoAutoPlayer(app, canvas)
+    #drawBuildingInfoAutoAI(app, canvas)
     drawMoney(app, canvas)  # XS
     drawPrice(app, canvas)  # XS
     drawExit(app, canvas)   # XS
     drawPlayer(app, canvas) # Shes
     drawAi(app, canvas) # Kehan
     drawFinish(app, canvas) #Kehan
-    
+    drawChanceRewards(app, canvas)
+    drawChancePenalty(app, canvas)  # XS
+
+ 
+
+     #determine who wins the game
+    if app.player.getCurrMoney()<0:
+        drawLose(app, canvas)
+        fail.playSound()
+        pygame.mixer.music.stop()
+
+    if app.ai.getCurrMoney()<0:
+        drawWin(app, canvas)
+        sucess.playSound()
+        pygame.mixer.music.stop()
+        
+    # drawWin(app, canvas)    # XS
+    # drawLose(app, canvas)   # XS
+
+    app.player.playerRent()
+    app.ai.aiRent()
 
 
-# The whole game running start here
+
+
+############################### whole game running start here #############################
 def appStarted(app):
 
     app.mode = 'startMode'
